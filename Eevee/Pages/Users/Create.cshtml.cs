@@ -14,9 +14,12 @@ namespace Eevee.Pages.Users
     {
         private readonly Eevee.Data.EeveeContext _context;
 
-        public CreateModel(Eevee.Data.EeveeContext context)
+        private readonly NaturalLanguage.NN.INN _textprocessor;
+
+        public CreateModel(Eevee.Data.EeveeContext context, NaturalLanguage.NN.INN textprocessor)
         {
             _context = context;
+            _textprocessor = textprocessor;
         }
 
         public IActionResult OnGet()
@@ -25,7 +28,9 @@ namespace Eevee.Pages.Users
         }
 
         [BindProperty]
-        public User User { get; set; }
+        public User _User { get; set; }
+
+        private UserAccountTypeAssignment UATA { get; set; }
 
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
@@ -36,7 +41,18 @@ namespace Eevee.Pages.Users
                 return Page();
             }
 
-            _context.User.Add(User);
+            _User.PreferenceVector = NaturalLanguage.vector.VectorSpace.ConvertToString(new float[_textprocessor.GetOutputSize()]);
+
+            _context.User.Add(_User);
+
+            UATA = new UserAccountTypeAssignment
+            {
+                AccountType = _context.AccountType.FirstOrDefault(a => a.Name == "General"),
+                User = _User
+            };
+
+            _context.Add(UATA);
+
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

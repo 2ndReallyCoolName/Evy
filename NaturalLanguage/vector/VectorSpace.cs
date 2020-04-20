@@ -96,14 +96,25 @@ namespace NaturalLanguage.vector
             return res;
         }
 
+        public static float[] Scale(float factor, float[] vector)
+        {
+            Parallel.For(0, vector.Length, i =>
+            {
+                vector[i] *= factor;
+            });
+            return vector;
+        }
+
         public static float[] ToArray(string vector)
         {
             return vector.Split(',').Select(e => float.Parse(e, CultureInfo.InvariantCulture.NumberFormat)).ToArray();
         }
 
-        public static string ToString(float[] vector)
+        public static string ConvertToString(float[] vector)
         {
             return string.Join(",", vector);
         }
+
+
     }
 }

@@ -37,7 +37,7 @@ namespace Eevee
 
             services.AddSession();
             services.AddMemoryCache();
-            services.AddRazorPages();
+            services.AddRazorPages().AddRazorRuntimeCompilation();
 
             services.AddDbContext<EeveeContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("EeveeContext")));

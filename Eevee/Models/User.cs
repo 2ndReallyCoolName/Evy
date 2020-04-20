@@ -16,5 +16,7 @@ namespace Eevee.Models
 
         [DataType(DataType.ImageUrl)]
         public string Image { get; set; }
+
+        public string PreferenceVector { get; set; }
     }
 }

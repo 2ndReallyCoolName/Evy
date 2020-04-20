@@ -2,22 +2,36 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
+    var id = User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault();
 }
-
 
 
 <!DOCTYPE html>
 <html>
+<head>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <script src="~/js/site.js"></script>
+</head>
+
 <body>
+    @*<div class="main">
+        <div class="player">
+            <div class="songTitle">Title</div>
+            <div class="buttons">
+                <button class="prev"> <img src="Prev.png" /></button>
+                <button class="play"> <img src="Play.png" /></button>
+                <button class="next"> <img src="Next.png" /></button>
+            </div>
+            <div class="progress-bar">
+                <div class="fill"></div>
+                <div class="handle"></div>
+            </div>
+        </div>
+    </div>*@
 
-    @*<iframe width="420" height="345" src="https://www.youtube.com/embed/tgbNymZ7vqY?autoplay=1">
-        </iframe>*@
-
-    <td>
-        <audio controls preload='none'>
-            <source src='' type='audio/wav'>
-        </audio>
-    </td>
+    
+    <p> Home Page</p>
 
 </body>
 </html>

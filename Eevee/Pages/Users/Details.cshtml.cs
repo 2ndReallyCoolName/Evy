@@ -19,7 +19,9 @@ namespace Eevee.Pages.Users
             _context = context;
         }
 
-        public User User { get; set; }
+        public User _User { get; set; }
+
+        public AccountType AccountType { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -28,12 +30,15 @@ namespace Eevee.Pages.Users
                 return NotFound();
             }
 
-            User = await _context.User.FirstOrDefaultAsync(m => m.UserID == id);
+            _User = await _context.User.FirstOrDefaultAsync(m => m.UserID == id);
 
-            if (User == null)
+            if (_User == null)
             {
                 return NotFound();
             }
+
+            AccountType = _context.UserAccountTypeAssignment.Where(u => u.User.UserID == id).Select(u=>u.AccountType).FirstOrDefault();
+
             return Page();
         }
     }

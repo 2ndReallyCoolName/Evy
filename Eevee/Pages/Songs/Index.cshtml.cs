@@ -32,30 +32,37 @@ namespace Eevee.Pages.Songs
 
         public string lv = "";
 
-        public async Task OnGetAsync()
+        public async Task OnGetAsync(int? id)
         {
-            if (SearchString.Length > 0)
+            if (id != null)
             {
-                List<Song> songs = _context.Song.ToList();
-
-                var word_vector = _textprocessor.PredictText(SearchString);
-                lv = NaturalLanguage.vector.VectorSpace.ToString(word_vector);
-
-                if (!string.IsNullOrEmpty(SearchString))
-                {
-                    foreach (var song in songs)
-                    {
-                        msg += song.Name + ": " + NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(song.WordVec)) + ", ";
-                    }
-
-                    songs.Sort((a, b) => NaturalLanguage.vector.VectorSpace.Loss(word_vector,
-                        NaturalLanguage.vector.VectorSpace.ToArray(a.WordVec)).CompareTo(NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(b.WordVec))));
-                }
-                Song = songs;
+                Song = await _context.Song.Where(s => s.Album.Artist.ArtistID == id).ToListAsync();
             }
             else
             {
-                Song = await _context.Song.ToListAsync();
+                if (SearchString.Length > 0)
+                {
+                    List<Song> songs = _context.Song.ToList();
+
+                    var word_vector = _textprocessor.PredictText(SearchString);
+                    lv = NaturalLanguage.vector.VectorSpace.ConvertToString(word_vector);
+
+                    if (!string.IsNullOrEmpty(SearchString))
+                    {
+                        foreach (var song in songs)
+                        {
+                            msg += song.Name + ": " + NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(song.WordVec)) + ", ";
+                        }
+
+                        songs.Sort((a, b) => NaturalLanguage.vector.VectorSpace.Loss(word_vector,
+                            NaturalLanguage.vector.VectorSpace.ToArray(a.WordVec)).CompareTo(NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(b.WordVec))));
+                    }
+                    Song = songs;
+                }
+                else
+                {
+                    Song = await _context.Song.ToListAsync();
+                }
             }
         }
     }

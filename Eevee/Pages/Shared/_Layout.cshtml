@@ -1,13 +1,26 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var id = User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault();
+    string ac_id = User.Claims.Where(c => c.Type == "AccountTypeID").Select(c => c.Value).SingleOrDefault();
+    if(ac_id == null)
+    {
+        ac_id = "2";
+    }
+    int aid = Int32.Parse(ac_id);
+
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Evy</title>
+    <title>@ViewData["Title"] - Evy </title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
+
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
@@ -26,11 +39,17 @@
                         {
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/users/index"> @User.Identity.Name</a>
+                                <a class="nav-link text-dark" asp-area="" asp-route-id=@id asp-page="/users/Details"> @User.Identity.Name </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-page="/users/SignOut"> Sign Out </a>
                             </li>
+                            @if (aid == 1)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/songs/create" asp-route-id=@id> Upload </a>
+                                </li>
+                            }
                         }
                         else
                         {
@@ -50,16 +69,14 @@
         </nav>
     </header>
 
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container">
-            <a class="navbar-brand" asp-area="" asp-page="/Index">Play</a>
+    <body>
+        <td>
+            <audio controls autoplay preload="none" id="aud" autobuffer>
+                <source src="~/music/GermanyNationalAnthem(Instrumental).mp3" type='audio/mp3'>
+            </audio>
+        </td>
+    </body>
 
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -76,6 +93,41 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        function setCookie(c_name,value,exdays)
+        {
+            sessionStorage.setItem("timeplayed", document.getElementsByTagName('audio')[0].currentTime);
+        }
+
+        function getCookie(c_name)
+        {
+            return sessionStorage.getItem("timeplayed");
+        }
+
+        var song = document.getElementsByTagName('audio')[0];
+        var played = false;
+        var tillPlayed = getCookie('timePlayed');
+        function update()
+        {
+            if(!played){
+                if(tillPlayed){
+                song.currentTime = tillPlayed;
+                song.play();
+                played = true;
+                }
+                else {
+                        song.play();
+                        played = true;
+                }
+            }
+
+            else {
+            setCookie('timePlayed', song.currentTime);
+            }
+        }
+        setInterval(update,20);
+    </script>
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -7,6 +7,8 @@
 
 <h1>Create</h1>
 
+<h1> @Model.error </h1>
+
 <h4>Artist</h4>
 <hr />
 <div class="row">
@@ -15,7 +17,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Artist.Name" class="control-label"></label>
-                <input asp-for="Artist.Name" class="form-control" />
+                <input asp-for="Artist.Name" class="form-control" value="@Model._User.Username"/>
                 <span asp-validation-for="Artist.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -25,20 +27,16 @@
             </div>
             <div class="form-group">
                 <label asp-for="Artist.Image" class="control-label"></label>
-                <input asp-for="Artist.Image" class="form-control" />
+                <input asp-for="Artist.Image" class="form-control" value="@Model._User.Image"/>
                 <span asp-validation-for="Artist.Image" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Artist.Password" class="control-label"></label>
-                <input asp-for="Artist.Password" class="form-control" />
-                <span asp-validation-for="Artist.Password" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Artist.Description" class="control-label"></label>
                 <input asp-for="Artist.Description" class="form-control" />
                 <span asp-validation-for="Artist.Description" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
+                
                 <label asp-for="Artist.Listens" class="control-label"></label>
                 <input asp-for="Artist.Listens" class="form-control" />
                 <span asp-validation-for="Artist.Listens" class="text-danger"></span>
@@ -52,7 +50,7 @@
                 <label asp-for="Artist.WordVec" class="control-label"></label>
                 <input asp-for="Artist.WordVec" class="form-control" />
                 <span asp-validation-for="Artist.WordVec" class="text-danger"></span>
-            </div>
+            </div>*@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

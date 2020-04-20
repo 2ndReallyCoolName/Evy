@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-
+using System.Reflection.Metadata;
 
 namespace Eevee.Pages
 {
@@ -20,11 +20,12 @@ namespace Eevee.Pages
         }
 
         public string user { get; set; }
+        
+        public string msg { get; set; }
 
         public void OnGet()
         {
             user = HttpContext.User.Identity.Name;
-            //user = HttpContext.Session.GetString("Username");
         }
 
     }

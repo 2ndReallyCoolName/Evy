@@ -38,50 +38,43 @@ namespace Eevee.Pages.Users
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if(_context.User.Any(u => u.Email == user_info)){
-                var user = from u in _context.User
-                           where u.Email == user_info
-                           select u;
-                var pass = user.Select(u => u.Password).FirstOrDefault();
+            var user = from u in _context.User
+                       where u.Email == user_info || u.Username == user_info
+                       select u;
 
-                if(pass == user_password)
-                {
-                    var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
-                    identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Select(u => u.Username).FirstOrDefault()));
-                    identity.AddClaim(new Claim(ClaimTypes.Name, user.Select(u => u.Username).FirstOrDefault()));
-                    var principal = new ClaimsPrincipal(identity);
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = true});
+            int user_id = user.Select(u => u.UserID).FirstOrDefault();
 
-                    HttpContext.Session.SetString("Username", user.Select(u => u.Username).FirstOrDefault());
-                    return RedirectToPage("/Index");
-                }
-                msg = "Wrong password.";
+            var accountType = from a in _context.UserAccountTypeAssignment
+                              where a.User.UserID == user_id
+                              select a;
+
+            int accountType_id = accountType.Select(a => a.AccountType.AccountTypeID).FirstOrDefault();
+
+            var pass = user.Select(u => u.Password).FirstOrDefault();
+
+
+            if(!user.Any())
+            {
+                msg = "No user matches that description.";
                 return Page();
+            }
 
-            }else if (_context.User.Any(u => u.Username == user_info)){
-                var user = from u in _context.User
-                           where u.Username == user_info
-                           select u;
-                var pass = user.Select(u => u.Password).FirstOrDefault();
-
-                if (pass == user_password)
-                {
-
-                    var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
-                    identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Select(u => u.Username).FirstOrDefault()));
-                    identity.AddClaim(new Claim(ClaimTypes.Name, user.Select(u => u.Username).FirstOrDefault()));
-                    var principal = new ClaimsPrincipal(identity);
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = true });
-
-                    HttpContext.Session.SetString("Username", user.Select(u => u.Username).FirstOrDefault());
-                    return RedirectToPage("/Index");
-                }
+            if (pass != user_password)
+            {
                 msg = "Wrong password.";
                 return Page();
             }
 
-            msg = "Not user matches that description.";
-            return Page();
+            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
+            identity.AddClaim(new Claim("UserID", user_id.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.Select(u => u.Username).FirstOrDefault()));
+            identity.AddClaim(new Claim("AccountTypeID", accountType_id.ToString()));
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = true });
+
+
+            return RedirectToPage("/Index");
+            
         }
     }
 

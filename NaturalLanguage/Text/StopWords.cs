@@ -63,10 +63,6 @@ namespace NaturalLanguage.Text
 
             var prediction = predictionEngine.Predict(data);
 
-            // Print the length of the word vector after the stop words removed.
-            Console.WriteLine("Number of words: " + prediction.WordsWithoutStopWords
-                .Length);
-
             //System.IO.File.WriteAllText(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "text.txt"), string.Join(" ", prediction.WordsWithoutStopWords));
 
             // Print the word vector without stop words.

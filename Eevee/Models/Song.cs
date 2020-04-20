@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using NaturalLanguage;
 
 namespace Eevee.Models
 {
@@ -9,33 +7,35 @@ namespace Eevee.Models
     {
         public int SongID { get; set; }
         [Required]
-        public string Name { get; set; }
+        public string Name { get; set; } //
         
         [Required]
         [Display(Name = "Release Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime ReleaseDate { get; set; }
+        public DateTime ReleaseDate { get; set; } //
 
         [Required]
-        public string Duration { get; set; }
+        public string Duration { get; set; } //
 
-        public int Listens { get; set; } = 0;
+        public int Listens { get; set; } = 0; //
 
-        public int Rating { get; set; } = 1;
+        public int Rating { get; set; } = 1; //
 
-        public string Lyrics { get; set; }
+        public string Lyrics { get; set; } //
 
-        public string WordVec { get; set; }
+        public string WordVec { get; set; } //
 
-        //[Required]
-        public Genre Genre { get; set; }
+        public string FreqVec { get; set; }
 
-        //[Required]
-        public Album Album { get; set; }
+        [Required]
+        public Genre Genre { get; set; } //
 
-        //[Required]
-        public string Fp { get; set; }
+        [Required]
+        public Album Album { get; set; } //
+
+        [Required]
+        public string Filepath { get; set; } //
 
     }
 }

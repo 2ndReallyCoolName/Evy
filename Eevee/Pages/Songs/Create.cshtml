@@ -10,51 +10,55 @@
 <h4>Song</h4>
 <hr />
 
+
+@*<form method="post" enctype="multipart/form-data">
+    <input type="file" asp-for="UploadedFile" />
+    <button type="submit" asp-page-handler="Upload">Upload</button>
+</form>*@
+
+
 <h5> @Model.error </h5>
 <div class="row">
     <div class="col-md-4">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label asp-for="Song.Name" class="control-label"></label>
-                <input asp-for="Song.Name" class="form-control" />
+                <input type="text"asp-for="Song.Name" class="form-control" />
                 <span asp-validation-for="Song.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Song.ReleaseDate" class="control-label"></label>
-                <input asp-for="Song.ReleaseDate" class="form-control" />
+                <input type="text" asp-for="Song.ReleaseDate" class="form-control" />
                 <span asp-validation-for="Song.ReleaseDate" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Song.Duration" class="control-label"></label>
-                <input asp-for="Song.Duration" class="form-control" />
+                <input type="text" asp-for="Song.Duration" class="form-control" />
                 <span asp-validation-for="Song.Duration" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Song.Listens" class="control-label"></label>
-                <input asp-for="Song.Listens" class="form-control" />
-                <span asp-validation-for="Song.Listens" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Song.Rating" class="control-label"></label>
-                <input asp-for="Song.Rating" class="form-control" />
-                <span asp-validation-for="Song.Rating" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <label asp-for="Song.Lyrics" class="control-label"></label>
-                <input asp-for="Song.Lyrics" class="form-control" />
+                <input type="text" asp-for="Song.Lyrics" class="form-control" />
                 <span asp-validation-for="Song.Lyrics" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Song.WordVec" class="control-label"></label>
-                <input asp-for="Song.WordVec" class="form-control" />
-                <span asp-validation-for="Song.WordVec" class="text-danger"></span>
+                <label asp-for="Song.Genre.Name" class="control-label">Genre</label>
+                <input type="text" asp-for="Song.Genre.Name" class="form-control" />
+                <span asp-validation-for="Song.Genre.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Song.Fp" class="control-label"></label>
-                <input asp-for="Song.Fp" class="form-control" />
-                <span asp-validation-for="Song.Fp" class="text-danger"></span>
+                <label asp-for="Song.Album.Name" class="control-label">Album</label>
+                <input type="text" asp-for="Song.Album.Name" class="form-control" />
+                <span asp-validation-for="Song.Album.Name" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <input type="file" asp-for="UploadedFile" />
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

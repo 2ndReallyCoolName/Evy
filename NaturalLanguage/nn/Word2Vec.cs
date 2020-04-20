@@ -6,31 +6,20 @@ using System.Linq;
 using System.Text;
 using Tensorflow;
 using static Tensorflow.Binding;
+using Accord.Math;
 
 namespace NaturalLanguage.NN
 {
     public class Word2Vec : AbstractNN, INN
     {
-        // Training Parameters
-        int batch_size = 128;
-        int num_steps = 3000; //3000000;
-        int display_step = 1000; //10000;
+        Dictionary<string, int> word2id = new Dictionary<string, int>();
+        Dictionary<string, float[]> wordsvecs = new Dictionary<string, float[]>();
 
-        string[] text_words;
-        List<WordId> word2id;
-        int[] data;
-        HashSet<string> words = new HashSet<string>();
+        float[,] diag = new float[50, 50];
 
-        // Word2Vec Parameters
-        int min_occurrence = 10; // Remove all words that does not appears at least n times
-        int skip_window = 3; // How many words to consider left and right
-        int num_skips = 2; // How many times to reuse an input to generate a label
+        readonly int output_size = 10;
 
-        int embedded_size = 50;
-        int data_index = 0;
-        float average_loss = 0;
-
-        string graph_path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())), $"Eevee\\Eevee\\bin\\graph2");
+        readonly string graph_path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())), $"Eevee\\Eevee\\bin\\graph2");
 
         //Tensors
         Tensor X = null;
@@ -41,13 +30,14 @@ namespace NaturalLanguage.NN
         Tensor cosine_sim_op = null;
 
         Graph graph = null;
+        Accord.Math.Decompositions.SingularValueDecomposition M = null;
 
         public Word2Vec()
         {
+            BuildGraph();
 
             PrepareData();
-
-            BuildGraph();
+            
         }
 
 
@@ -83,81 +73,43 @@ namespace NaturalLanguage.NN
         public override void Train()
         {
 
-            var init = tf.global_variables_initializer();
-
-            using (var sess = tf.Session(graph))
-            {
-
-                sess.run(init);
-
-                tf.train.Saver().restore(sess, tf.train.latest_checkpoint(graph_path));
-
-
-                foreach (var step in range(1, num_steps + 1))
-                {
-                    // Get a new batch of data
-                    var (batch_x, batch_y) = next_batch(batch_size, num_skips, skip_window);
-
-                    (_, float loss) = sess.run((train_op, loss_op), (X, batch_x), (Y, batch_y));
-                    average_loss += loss;
-
-                    if (step % display_step == 0 || step == 1)
-                    {
-                        if (step > 1)
-                            average_loss /= display_step;
-                        average_loss = 0;
-                    }
-                }
-
-                tf.train.Saver().save(sess, Path.Combine(graph_path, "my-model2"));
-
-            }
         }
 
         public bool Run()
         {
-            //PrepareData();
-
-            //BuildGraph();
-
-            //Train();
-
             return true;
         }
 
 
         public override float[] Predict(string word)
         {
-
-            if (words.Contains(word)) { 
-
-                //var init = tf.global_variables_initializer();
+            if (wordsvecs.ContainsKey(word)){
+                return wordsvecs[word];
+            }else 
+            
+            if (word2id.ContainsKey(word)) { 
 
 
                 using (var sess = tf.Session(graph))
                 {
 
-                    //sess.run(init);
 
                     tf.train.Saver().restore(sess, tf.train.latest_checkpoint(graph_path));
 
-                    var x_test = (from w in new String[] { word }
-                                  join id in word2id on w equals id.Word into wi
-                                  from wi2 in wi.DefaultIfEmpty()
-                                  select wi2 == null ? 0 : wi2.Id).ToArray();
+                    int[] s = { word2id[word] };
 
-                    var emb = sess.run(embedding, (X, x_test));
+                    var emb = sess.run(embedding, (X, s));
 
-                    //float[] l = emb[0].Data<float>().Skip(1).ToArray();
+                    var vector = NaturalLanguage.vector.VectorSpace.Normalize(emb[0].Data<float>().ToArray());
 
-                    //var sim = sess.run(cosine_sim_op, (X, x_test));
+                    return Matrix.Dot(vector, diag).Take(output_size).ToArray();
 
-                    return NaturalLanguage.vector.VectorSpace.Normalize(emb[0].Data<float>().ToArray());
+                    //return NaturalLanguage.vector.VectorSpace.Normalize(emb[0].Data<float>().ToArray());
                 }
             }
             else
             {
-                return new float[embedded_size];
+                return new float[output_size];
             }
 
         }
@@ -165,6 +117,11 @@ namespace NaturalLanguage.NN
         public override float[] PredictText(string text)
         {
             string[] words = Text.RemoveStopWords.RemoveWords(text.Trim().ToLower());
+
+            if(words == null)
+            {
+                return new float[output_size];
+            }
 
             float[][] vectors = new float[words.Length][];
 
@@ -181,102 +138,37 @@ namespace NaturalLanguage.NN
             return vector.VectorSpace.Normalize(vector.VectorSpace.Add(vectors));
         }
 
-
-        // Generate training batch for the skip-gram model
-        private (NDArray, NDArray) next_batch(int batch_size, int num_skips, int skip_window)
-        {
-            var batch = np.ndarray(new Shape(batch_size), dtype: np.int32);
-            var labels = np.ndarray((batch_size, 1), dtype: np.int32);
-            // get window size (words left and right + current one)
-            int span = 2 * skip_window + 1;
-            var buffer = new Queue<int>(span);
-            if (data_index + span > data.Length)
-                data_index = 0;
-            data.Skip(data_index).Take(span).ToList().ForEach(x => buffer.Enqueue(x));
-            data_index += span;
-
-            foreach (var i in range(batch_size / num_skips))
-            {
-                var context_words = range(span).Where(x => x != skip_window).ToArray();
-                var words_to_use = new int[] { 1, 6 };
-                foreach (var (j, context_word) in enumerate(words_to_use))
-                {
-                    batch[i * num_skips + j] = buffer.ElementAt(skip_window);
-                    labels[i * num_skips + j, 0] = buffer.ElementAt(context_word);
-                }
-
-                if (data_index == len(data))
-                {
-                    //buffer.extend(data[0:span]);
-                    data_index = span;
-                }
-                else
-                {
-                    buffer.Enqueue(data[data_index]);
-                    data_index += 1;
-                }
-            }
-
-            // Backtrack a little bit to avoid skipping words in the end of a batch
-            data_index = (data_index + len(data) - span) % len(data);
-
-            return (batch, labels);
-        }
-
         public override void PrepareData()
         {
-            int wordId = 0;
+            var lines = File.ReadAllLines(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "words.txt"), Encoding.UTF8);
 
-            text_words = File.ReadAllText(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "text.txt"), Encoding.UTF8).Split(' ');
-
-            // Build the dictionary and replace rare words with UNK token
-            word2id = text_words.GroupBy(x => x)
-                .Select(x => new WordId
-                {
-                    Word = x.Key,
-                    Occurrence = x.Count()
-                })
-                .Where(x => (x.Occurrence >= min_occurrence) && (x.Word.Length > 2)) // Remove samples with less than 'min_occurrence' occurrences
-                .OrderByDescending(x => x.Occurrence) // Retrieve the most common words
-                .Select(x => new WordId
-                {
-                    Word = x.Word,
-                    Id = ++wordId, // Assign an id to each word
-                    Occurrence = x.Occurrence
-                })
-                .ToList();
-
-            // Retrieve a word id, or assign it index 0 ('UNK') if not in dictionary
-            data = (from word in text_words
-                    join id in word2id on word equals id.Word into wi
-                    from wi2 in wi.DefaultIfEmpty()
-                    select wi2 == null ? 0 : wi2.Id).ToArray();
-
-
-            foreach(string word in text_words)
+            foreach (var line in lines)
             {
-                words.Add(word);
+                var ls = line.Split(' ');
+                word2id.Add(ls[0], Int32.Parse(ls[1]));
             }
 
-            word2id.Insert(0, new WordId { Word = "UNK", Id = 0, Occurrence = data.Count(x => x == 0) });
 
+            var vecs = File.ReadAllLines(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "wordvecs2.txt"), Encoding.UTF8);
+
+            var l = vecs.Length;
+
+            for (int i = 0; i < l; i++)
+            {
+                var sl = vecs[i].Split(':');
+                wordsvecs.Add(sl[0], NaturalLanguage.vector.VectorSpace.ToArray(sl[1]));
+            }
+
+
+            var diags = File.ReadAllText(System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "diag.txt"), Encoding.UTF8).Split(',');
+
+            for (int i = 0; i < diags.Length; i++)
+                diag[i, i] = float.Parse(diags[i]);
         }
 
         public override int GetOutputSize()
         {
-            return embedded_size;
-        }
-
-        private class WordId
-        {
-            public string Word { get; set; }
-            public int Id { get; set; }
-            public int Occurrence { get; set; }
-
-            public override string ToString()
-            {
-                return Word + " " + Id + " " + Occurrence;
-            }
+            return output_size;
         }
     }
 }

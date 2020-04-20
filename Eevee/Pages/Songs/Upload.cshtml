@@ -1,0 +1,13 @@
+﻿@page
+@model Eevee.Pages.Songs.UploadModel
+@{
+    ViewData["Title"] = "Upload";
+}
+
+<h1>Upload</h1>
+
+
+<form method="post" enctype="multipart/form-data">
+    <input type="file" asp-for="Upload" />
+    <input type="submit" />
+</form>

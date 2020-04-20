@@ -12,6 +12,7 @@ namespace Eevee.Pages.Users
     {
         public IActionResult OnGet()
         {
+            HttpContext.Items["UserID"] = 0;
             HttpContext.SignOutAsync();
             return RedirectToPage("/Index");
         }

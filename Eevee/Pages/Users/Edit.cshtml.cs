@@ -21,7 +21,7 @@ namespace Eevee.Pages.Users
         }
 
         [BindProperty]
-        public User User { get; set; }
+        public User _User { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,9 +30,9 @@ namespace Eevee.Pages.Users
                 return NotFound();
             }
 
-            User = await _context.User.FirstOrDefaultAsync(m => m.UserID == id);
+            _User = await _context.User.FirstOrDefaultAsync(m => m.UserID == id);
 
-            if (User == null)
+            if (_User == null)
             {
                 return NotFound();
             }
@@ -48,7 +48,7 @@ namespace Eevee.Pages.Users
                 return Page();
             }
 
-            _context.Attach(User).State = EntityState.Modified;
+            _context.Attach(_User).State = EntityState.Modified;
 
             try
             {
@@ -56,7 +56,7 @@ namespace Eevee.Pages.Users
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!UserExists(User.UserID))
+                if (!UserExists(_User.UserID))
                 {
                     return NotFound();
                 }

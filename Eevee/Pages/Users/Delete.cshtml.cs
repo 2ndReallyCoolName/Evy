@@ -20,7 +20,7 @@ namespace Eevee.Pages.Users
         }
 
         [BindProperty]
-        public User User { get; set; }
+        public User _User { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,9 +29,9 @@ namespace Eevee.Pages.Users
                 return NotFound();
             }
 
-            User = await _context.User.FirstOrDefaultAsync(m => m.UserID == id);
+            _User = await _context.User.FirstOrDefaultAsync(m => m.UserID == id);
 
-            if (User == null)
+            if (_User == null)
             {
                 return NotFound();
             }
@@ -45,11 +45,24 @@ namespace Eevee.Pages.Users
                 return NotFound();
             }
 
-            User = await _context.User.FindAsync(id);
+            _User = await _context.User.FindAsync(id);
 
-            if (User != null)
+            List<UserAccountTypeAssignment> uata = _context.UserAccountTypeAssignment.Where(u => u.User.UserID == _User.UserID).ToList();
+
+            Artist Artist = await _context.Artist.FindAsync(id);
+
+            if (_User != null)
             {
-                _context.User.Remove(User);
+                _context.User.Remove(_User);
+
+                foreach(var ut in uata)
+                {
+                    _context.UserAccountTypeAssignment.Remove(ut);
+                }
+
+                if (Artist != null)
+                    _context.Artist.Remove(Artist);
+
                 await _context.SaveChangesAsync();
             }
 

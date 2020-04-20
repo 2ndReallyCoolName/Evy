@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Eevee.Data;
 using Eevee.Models;
+using Vspace = NaturalLanguage.vector.VectorSpace;
 
 namespace Eevee.Pages.Songs
 {
@@ -16,6 +17,9 @@ namespace Eevee.Pages.Songs
         private readonly Eevee.Data.EeveeContext _context;
 
         private readonly NaturalLanguage.NN.INN _textprocessor;
+
+        private readonly float artist_contrib = 0.3f;
+        private readonly float genre_contrib = 0.3f;
 
         public EditModel(Eevee.Data.EeveeContext context, NaturalLanguage.NN.INN textprocessor)
         {
@@ -51,7 +55,16 @@ namespace Eevee.Pages.Songs
                 return Page();
             }
 
-            Song.WordVec = NaturalLanguage.vector.VectorSpace.ToString(_textprocessor.Predict(Song.Lyrics));
+            User user = _context.User.FirstOrDefault(u => u.Username == User.Identity.Name);
+
+            Artist artist = _context.Artist.FirstOrDefault(a => a.ArtistID == user.UserID);
+
+            Genre genre = Song.Genre;
+
+            Song.WordVec = Vspace.ConvertToString(
+                Vspace.Add(Vspace.Add(_textprocessor.PredictText(Song.Lyrics), Vspace.Scale(artist_contrib, Vspace.ToArray(artist.WordVec))),
+                    Vspace.Scale(genre_contrib, Vspace.ToArray(genre.WordVec))));
+
 
             _context.Attach(Song).State = EntityState.Modified;
 

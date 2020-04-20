@@ -18,6 +18,24 @@
             @Html.DisplayFor(model => model.Song.Name)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Song.Album.Artist.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Song.Album.Artist.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Song.Album.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Song.Album.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Song.Genre.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Song.Genre.Name)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Song.ReleaseDate)
         </dt>
         <dd class="col-sm-10">
@@ -47,18 +65,7 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Song.Lyrics)
         </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Song.WordVec)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Song.WordVec)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Song.Fp)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Song.Fp)
-        </dd>
+
     </dl>
 </div>
 <div>

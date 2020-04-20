@@ -1,9 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Eevee.Models
 {
     public class Advertiser
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int AdvertiserID { get; set; }
 
         [Required]
@@ -25,6 +30,9 @@ namespace Eevee.Models
         public bool AutoPay { get; set; } = false;
 
         [Required]
+        public string About { get; set; }
+
+        [Required]
         [DataType(DataType.Url)]
         public string Url { get; set; }
 
@@ -34,10 +42,6 @@ namespace Eevee.Models
         public int Clicks { get; set; } = 0;
         
         public int Views { get; set; } = 0;
-
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
 
         [Required]
         public AdvertiserType AdvertiserType { get; set; }

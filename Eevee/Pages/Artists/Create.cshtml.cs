@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Eevee.Data;
 using Eevee.Models;
+using Vspace = NaturalLanguage.vector.VectorSpace;
 
 namespace Eevee.Pages.Artists
 {
@@ -14,29 +15,71 @@ namespace Eevee.Pages.Artists
     {
         private readonly Eevee.Data.EeveeContext _context;
 
-        public CreateModel(Eevee.Data.EeveeContext context)
+        private readonly NaturalLanguage.NN.INN _textprocessor;
+
+        public CreateModel(Eevee.Data.EeveeContext context, NaturalLanguage.NN.INN textprocessor)
         {
             _context = context;
+            _textprocessor = textprocessor;
         }
 
-        public IActionResult OnGet()
+        public User _User { get; set; }
+
+        private UserAccountTypeAssignment UATA { get; set; }
+
+
+        public IActionResult OnGet(int? id)
         {
+            if (id == null)
+            {
+                return RedirectToPage("./Users/SignIn");
+            }
+
+            _User = _context.User.FirstOrDefault(u=>u.UserID == id.GetValueOrDefault());
+
             return Page();
         }
+
+        public string error { get; set; }
 
         [BindProperty]
         public Artist Artist { get; set; }
 
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(int id)
         {
+
+            Artist.ArtistID = id;
+
             if (!ModelState.IsValid)
             {
+
+                error = string.Join(" | ", ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage));
+
+                error += id.ToString();
+
                 return Page();
             }
+            
+            Artist.Listens = 0;
+
+            Artist.Rating = 1;
+
+            Artist.WordVec = Vspace.ConvertToString(Vspace.Add(_textprocessor.PredictText(Artist.Name), _textprocessor.PredictText(Artist.Description)));
 
             _context.Artist.Add(Artist);
+
+            UATA = new UserAccountTypeAssignment
+            {
+                AccountType = _context.AccountType.FirstOrDefault(a => a.Name == "Artist"),
+                User = _context.User.FirstOrDefault(u => u.UserID == id)
+            };
+
+            _context.UserAccountTypeAssignment.Add(UATA);
+            
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

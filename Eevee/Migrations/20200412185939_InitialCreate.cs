@@ -8,6 +8,19 @@ namespace Eevee.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AccountType",
+                columns: table => new
+                {
+                    AccountTypeID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountType", x => x.AccountTypeID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AdvertiserType",
                 columns: table => new
                 {
@@ -24,12 +37,10 @@ namespace Eevee.Migrations
                 name: "Artist",
                 columns: table => new
                 {
-                    ArtistID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArtistID = table.Column<int>(nullable: false),
                     Name = table.Column<string>(nullable: false),
                     StartDate = table.Column<DateTime>(nullable: false),
                     Image = table.Column<string>(nullable: true),
-                    Password = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     Listens = table.Column<int>(nullable: false),
                     Rating = table.Column<float>(nullable: false),
@@ -41,25 +52,13 @@ namespace Eevee.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Frequency",
-                columns: table => new
-                {
-                    FrequencyID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Hz = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Frequency", x => x.FrequencyID);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Genre",
                 columns: table => new
                 {
                     GenreID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: false)
+                    Name = table.Column<string>(nullable: false),
+                    WordVec = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -96,6 +95,20 @@ namespace Eevee.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SongInstrumentAssignment",
+                columns: table => new
+                {
+                    SongInstrumentAssignmentID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SongID = table.Column<int>(nullable: false),
+                    InstrumentID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SongInstrumentAssignment", x => x.SongInstrumentAssignmentID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "User",
                 columns: table => new
                 {
@@ -104,41 +117,12 @@ namespace Eevee.Migrations
                     Username = table.Column<string>(nullable: false),
                     Password = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: false),
-                    Image = table.Column<string>(nullable: true)
+                    Image = table.Column<string>(nullable: true),
+                    PreferenceVector = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.UserID);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Advertiser",
-                columns: table => new
-                {
-                    AdvertiserID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: false),
-                    Phone = table.Column<int>(nullable: false),
-                    Email = table.Column<string>(nullable: false),
-                    CardNumber = table.Column<long>(nullable: false),
-                    MonthsRemaining = table.Column<int>(nullable: false),
-                    AutoPay = table.Column<bool>(nullable: false),
-                    Url = table.Column<string>(nullable: false),
-                    Image = table.Column<string>(nullable: true),
-                    Clicks = table.Column<int>(nullable: false),
-                    Views = table.Column<int>(nullable: false),
-                    Password = table.Column<string>(nullable: false),
-                    AdvertiserTypeID = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Advertiser", x => x.AdvertiserID);
-                    table.ForeignKey(
-                        name: "FK_Advertiser_AdvertiserType_AdvertiserTypeID",
-                        column: x => x.AdvertiserTypeID,
-                        principalTable: "AdvertiserType",
-                        principalColumn: "AdvertiserTypeID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -205,17 +189,11 @@ namespace Eevee.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: false),
                     InstrumentTypeID = table.Column<int>(nullable: false),
-                    FrequencyID = table.Column<int>(nullable: false)
+                    Filepath = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Note", x => x.NoteID);
-                    table.ForeignKey(
-                        name: "FK_Note_Frequency_FrequencyID",
-                        column: x => x.FrequencyID,
-                        principalTable: "Frequency",
-                        principalColumn: "FrequencyID",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Note_InstrumentType_InstrumentTypeID",
                         column: x => x.InstrumentTypeID,
@@ -245,6 +223,32 @@ namespace Eevee.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserAccountTypeAssignment",
+                columns: table => new
+                {
+                    UserAccountTypeAssignmentID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserID = table.Column<int>(nullable: false),
+                    AccountTypeID = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAccountTypeAssignment", x => x.UserAccountTypeAssignmentID);
+                    table.ForeignKey(
+                        name: "FK_UserAccountTypeAssignment_AccountType_AccountTypeID",
+                        column: x => x.AccountTypeID,
+                        principalTable: "AccountType",
+                        principalColumn: "AccountTypeID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserAccountTypeAssignment_User_UserID",
+                        column: x => x.UserID,
+                        principalTable: "User",
+                        principalColumn: "UserID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Song",
                 columns: table => new
                 {
@@ -257,9 +261,10 @@ namespace Eevee.Migrations
                     Rating = table.Column<int>(nullable: false),
                     Lyrics = table.Column<string>(nullable: true),
                     WordVec = table.Column<string>(nullable: true),
-                    GenreID = table.Column<int>(nullable: true),
-                    AlbumID = table.Column<int>(nullable: true),
-                    Fp = table.Column<string>(nullable: true)
+                    FreqVec = table.Column<string>(nullable: true),
+                    GenreID = table.Column<int>(nullable: false),
+                    AlbumID = table.Column<int>(nullable: false),
+                    Filepath = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -279,33 +284,14 @@ namespace Eevee.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SongInstrumentAssignment",
-                columns: table => new
-                {
-                    SongInstrumentAssignmentID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SongID = table.Column<int>(nullable: false),
-                    InstrumentID = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SongInstrumentAssignment", x => x.SongInstrumentAssignmentID);
-                    table.ForeignKey(
-                        name: "FK_SongInstrumentAssignment_Instrument_InstrumentID",
-                        column: x => x.InstrumentID,
-                        principalTable: "Instrument",
-                        principalColumn: "InstrumentID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "History",
                 columns: table => new
                 {
                     HistoryID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserID = table.Column<int>(nullable: false),
-                    SongID = table.Column<int>(nullable: false)
+                    SongID = table.Column<int>(nullable: false),
+                    Progress = table.Column<float>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -350,37 +336,6 @@ namespace Eevee.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "SongFrequencyAssignment",
-                columns: table => new
-                {
-                    SongFrequencyAssignmentID = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SongID = table.Column<int>(nullable: false),
-                    FrequencyID = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SongFrequencyAssignment", x => x.SongFrequencyAssignmentID);
-                    table.ForeignKey(
-                        name: "FK_SongFrequencyAssignment_Frequency_FrequencyID",
-                        column: x => x.FrequencyID,
-                        principalTable: "Frequency",
-                        principalColumn: "FrequencyID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SongFrequencyAssignment_Song_SongID",
-                        column: x => x.SongID,
-                        principalTable: "Song",
-                        principalColumn: "SongID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Advertiser_AdvertiserTypeID",
-                table: "Advertiser",
-                column: "AdvertiserTypeID");
-
             migrationBuilder.CreateIndex(
                 name: "IX_Album_ArtistID",
                 table: "Album",
@@ -410,11 +365,6 @@ namespace Eevee.Migrations
                 name: "IX_Instrument_InstrumentTypeID",
                 table: "Instrument",
                 column: "InstrumentTypeID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Note_FrequencyID",
-                table: "Note",
-                column: "FrequencyID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Note_InstrumentTypeID",
@@ -447,28 +397,26 @@ namespace Eevee.Migrations
                 column: "GenreID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SongFrequencyAssignment_FrequencyID",
-                table: "SongFrequencyAssignment",
-                column: "FrequencyID");
+                name: "IX_UserAccountTypeAssignment_AccountTypeID",
+                table: "UserAccountTypeAssignment",
+                column: "AccountTypeID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SongFrequencyAssignment_SongID",
-                table: "SongFrequencyAssignment",
-                column: "SongID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SongInstrumentAssignment_InstrumentID",
-                table: "SongInstrumentAssignment",
-                column: "InstrumentID");
+                name: "IX_UserAccountTypeAssignment_UserID",
+                table: "UserAccountTypeAssignment",
+                column: "UserID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Advertiser");
+                name: "AdvertiserType");
 
             migrationBuilder.DropTable(
                 name: "History");
+
+            migrationBuilder.DropTable(
+                name: "Instrument");
 
             migrationBuilder.DropTable(
                 name: "Note");
@@ -477,25 +425,25 @@ namespace Eevee.Migrations
                 name: "PlaylistSongAssignment");
 
             migrationBuilder.DropTable(
-                name: "SongFrequencyAssignment");
-
-            migrationBuilder.DropTable(
                 name: "SongInstrumentAssignment");
 
             migrationBuilder.DropTable(
-                name: "AdvertiserType");
+                name: "UserAccountTypeAssignment");
+
+            migrationBuilder.DropTable(
+                name: "InstrumentManufacturer");
+
+            migrationBuilder.DropTable(
+                name: "InstrumentType");
 
             migrationBuilder.DropTable(
                 name: "Playlist");
 
             migrationBuilder.DropTable(
-                name: "Frequency");
-
-            migrationBuilder.DropTable(
                 name: "Song");
 
             migrationBuilder.DropTable(
-                name: "Instrument");
+                name: "AccountType");
 
             migrationBuilder.DropTable(
                 name: "User");
@@ -505,12 +453,6 @@ namespace Eevee.Migrations
 
             migrationBuilder.DropTable(
                 name: "Genre");
-
-            migrationBuilder.DropTable(
-                name: "InstrumentManufacturer");
-
-            migrationBuilder.DropTable(
-                name: "InstrumentType");
 
             migrationBuilder.DropTable(
                 name: "Artist");
