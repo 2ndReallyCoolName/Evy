@@ -1,7 +1,7 @@
 # Evy
 
 Add folder graph2 to bin of repositories. 
-Add text.txt to Eevee/bin/Debug/netcoreapp3.0 and NaturalLanguage/bin/Debug/netcoreapp2.0
+Add text.txt, words.txt, wordvecs2.txt to Eevee/bin/Debug/netcoreapp3.0 and NaturalLanguage/bin/Debug/netcoreapp2.0
 
 Packages Required:
 Eevee:
