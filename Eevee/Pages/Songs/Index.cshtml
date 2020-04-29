@@ -1,4 +1,4 @@
-﻿@page
+@page
 @model Eevee.Pages.Songs.IndexModel
 
 @{
@@ -26,7 +26,13 @@
 <h4>
     @Model.msg
 </h4>
-
+    <div class="box">
+        <select>
+            <option>Songs</option>
+            <option>Artist</option>
+            <option>Instruments</option>
+            <option>Advertisement</option>
+        </select>
 <p>
     <a asp-page="Create">Create New</a>
 </p>
@@ -123,7 +129,6 @@
     function play(filepath, id) {
         sessionStorage.setItem("url", filepath);
         sessionStorage.setItem("playSong", 1);
-
         $.ajax({
             type: "POST",
             url: "/Songs/Index?handler=IncreaseListen",
@@ -143,7 +148,6 @@
             }
         });
     }
-
     function like(id) {
         $.ajax({
             type: "POST",
@@ -164,7 +168,6 @@
             }
         });
     }
-
     function dislike(id) {
         $.ajax({
             type: "POST",
@@ -185,5 +188,4 @@
             }
         });
     }
-
 </script>
