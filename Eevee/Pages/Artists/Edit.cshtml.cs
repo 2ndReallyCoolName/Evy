@@ -13,11 +13,11 @@ namespace Eevee.Pages.Artists
 {
     public class EditModel : PageModel
     {
-        private readonly Eevee.Data.EeveeContext _context;
+        private readonly Eevee.Data.ArtistDataAccess _access;
 
-        public EditModel(Eevee.Data.EeveeContext context)
+        public EditModel(EeveeContext context)
         {
-            _context = context;
+            _access = new ArtistDataAccess(context);
         }
 
         [BindProperty]
@@ -30,7 +30,7 @@ namespace Eevee.Pages.Artists
                 return NotFound();
             }
 
-            Artist = await _context.Artist.FirstOrDefaultAsync(m => m.ArtistID == id);
+            Artist = await _access.Get(id.GetValueOrDefault()).FirstOrDefaultAsync();
 
             if (Artist == null)
             {
@@ -48,11 +48,11 @@ namespace Eevee.Pages.Artists
                 return Page();
             }
 
-            _context.Attach(Artist).State = EntityState.Modified;
+            _access.Attach(EntityState.Modified, Artist);
 
             try
             {
-                await _context.SaveChangesAsync();
+                await _access.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -71,7 +71,7 @@ namespace Eevee.Pages.Artists
 
         private bool ArtistExists(int id)
         {
-            return _context.Artist.Any(e => e.ArtistID == id);
+            return _access.Exists(id);
         }
     }
 }

@@ -72,7 +72,7 @@
     <body>
         <td>
             <audio controls autoplay preload="none" id="aud" autobuffer>
-                <source src="~/music/GermanyNationalAnthem(Instrumental).mp3" type='audio/mp3'>
+                <source src="~/music/GermanyNationalAnthem(Instrumental).mp3" id="a-src" type='audio/mp3'>
             </audio>
         </td>
     </body>
@@ -86,7 +86,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - Evy - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2020 - Evy - <a asp-area="" asp-page="/Privacy">Privacy</a>
         </div>
     </footer>
 
@@ -95,26 +95,40 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <script>
-        function setCookie(c_name,value,exdays)
+        function setCookie()
         {
             sessionStorage.setItem("timeplayed", document.getElementsByTagName('audio')[0].currentTime);
+            sessionStorage.setItem("audioSource", document.getElementById('a-src').src);
+            //sessionStorage.setItem("playSong", played);
         }
 
-        function getCookie(c_name)
+        function getCookie()
         {
             return sessionStorage.getItem("timeplayed");
         }
 
         var song = document.getElementsByTagName('audio')[0];
         var played = false;
-        var tillPlayed = getCookie('timePlayed');
+        var tillPlayed = getCookie();
+        var source = document.getElementById('a-src');
+
         function update()
         {
-            if(!played){
-                if(tillPlayed){
-                song.currentTime = tillPlayed;
+            if (sessionStorage.getItem("playSong") == 1) {
+                sessionStorage.setItem("playSong", 0);
+                source.src = sessionStorage.getItem("url");
+                song.currentTime = 0;
+                song.load();
                 song.play();
-                played = true;
+            }
+
+            if(!played){
+                if (tillPlayed) {
+                    song.currentTime = tillPlayed;
+                    source.src = sessionStorage.getItem("url");
+                    song.load();
+                    song.play();
+                    played = true;
                 }
                 else {
                         song.play();
@@ -123,12 +137,15 @@
             }
 
             else {
-            setCookie('timePlayed', song.currentTime);
+            setCookie();
             }
         }
-        setInterval(update,20);
+        setInterval(update, 20);
+
+        //"~/music/GermanyNationalAnthem(Instrumental).mp3"
     </script>
 
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+

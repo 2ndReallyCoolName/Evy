@@ -17,10 +17,13 @@ namespace Eevee.Pages.Artists
 
         private readonly NaturalLanguage.NN.INN _textprocessor;
 
+        private readonly Eevee.Data.ArtistDataAccess _access;
+        
         public CreateModel(Eevee.Data.EeveeContext context, NaturalLanguage.NN.INN textprocessor)
         {
             _context = context;
             _textprocessor = textprocessor;
+            _access = new ArtistDataAccess(context);
         }
 
         public User _User { get; set; }
@@ -70,17 +73,7 @@ namespace Eevee.Pages.Artists
 
             Artist.WordVec = Vspace.ConvertToString(Vspace.Add(_textprocessor.PredictText(Artist.Name), _textprocessor.PredictText(Artist.Description)));
 
-            _context.Artist.Add(Artist);
-
-            UATA = new UserAccountTypeAssignment
-            {
-                AccountType = _context.AccountType.FirstOrDefault(a => a.Name == "Artist"),
-                User = _context.User.FirstOrDefault(u => u.UserID == id)
-            };
-
-            _context.UserAccountTypeAssignment.Add(UATA);
-            
-            await _context.SaveChangesAsync();
+            await _access.Create(id, Artist);
 
             return RedirectToPage("./Index");
         }

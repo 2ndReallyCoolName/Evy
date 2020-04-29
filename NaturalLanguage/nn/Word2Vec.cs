@@ -116,6 +116,11 @@ namespace NaturalLanguage.NN
 
         public override float[] PredictText(string text)
         {
+            if(text == null)
+            {
+                return new float[output_size];
+            }
+
             string[] words = Text.RemoveStopWords.RemoveWords(text.Trim().ToLower());
 
             if(words == null)

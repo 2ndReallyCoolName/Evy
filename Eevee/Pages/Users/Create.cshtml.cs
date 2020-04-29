@@ -32,6 +32,7 @@ namespace Eevee.Pages.Users
 
         private UserAccountTypeAssignment UATA { get; set; }
 
+
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
@@ -51,7 +52,12 @@ namespace Eevee.Pages.Users
                 User = _User
             };
 
-            _context.Add(UATA);
+            _context.UserAccountTypeAssignment.Add(UATA);
+
+            Playlist playlist = new Playlist { Name = "Main", User = _User };
+
+            _context.Playlist.Add(playlist);
+
 
             await _context.SaveChangesAsync();
 

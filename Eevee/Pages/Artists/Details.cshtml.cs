@@ -12,11 +12,11 @@ namespace Eevee.Pages.Artists
 {
     public class DetailsModel : PageModel
     {
-        private readonly Eevee.Data.EeveeContext _context;
+        private readonly Eevee.Data.ArtistDataAccess _access;
 
         public DetailsModel(Eevee.Data.EeveeContext context)
         {
-            _context = context;
+            _access = new ArtistDataAccess(context);
         }
 
         public Artist Artist { get; set; }
@@ -28,7 +28,7 @@ namespace Eevee.Pages.Artists
                 return NotFound();
             }
 
-            Artist = await _context.Artist.FirstOrDefaultAsync(m => m.ArtistID == id);
+            Artist = await _access.Get(id.GetValueOrDefault()).FirstOrDefaultAsync();
 
             if (Artist == null)
             {

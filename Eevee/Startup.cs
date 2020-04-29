@@ -60,7 +60,6 @@ namespace Eevee
                 app.UseHsts();
             }
             
-
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseStaticFiles();

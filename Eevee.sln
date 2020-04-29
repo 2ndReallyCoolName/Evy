@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eevee", "Eevee\Eevee.csproj", "{5F561E7C-ECA0-4CB0-A92E-982E8CB4A001}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Eevee", "Eevee\Eevee.csproj", "{5F561E7C-ECA0-4CB0-A92E-982E8CB4A001}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaturalLanguage", "NaturalLanguage\NaturalLanguage.csproj", "{BF105FA1-9055-4869-868B-ABAB9914E59F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NaturalLanguage", "NaturalLanguage\NaturalLanguage.csproj", "{BF105FA1-9055-4869-868B-ABAB9914E59F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

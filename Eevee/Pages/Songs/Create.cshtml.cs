@@ -56,7 +56,9 @@ namespace Eevee.Pages.Songs
                 await UploadedFile.CopyToAsync(fileStream);
             }
 
-            Song.Filepath = "~/music/" + UploadedFile.FileName;
+            string filename = UploadedFile.FileName;
+            filename.Replace(" ", string.Empty);
+            Song.Filepath = "/music/" + filename;
 
             User user = _context.User.FirstOrDefault(u => u.Username == User.Identity.Name);
 
@@ -71,9 +73,9 @@ namespace Eevee.Pages.Songs
                     Name = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Song.Genre.Name.ToLower()),
                     WordVec = VSpace.ConvertToString(_textprocessor.PredictText(Song.Genre.Name))
                 };
+                _context.Genre.Add(genre);
             }
 
-            _context.Genre.Add(genre);
             Song.Genre = genre;
             
             var album = _context.Album.FirstOrDefault(a => a.Name == Song.Album.Name && a.Artist.ArtistID == id);

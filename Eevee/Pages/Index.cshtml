@@ -1,7 +1,7 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = " Welcome to Home page";
     var id = User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault();
 }
 
@@ -15,23 +15,45 @@
 </head>
 
 <body>
-    @*<div class="main">
-        <div class="player">
-            <div class="songTitle">Title</div>
-            <div class="buttons">
-                <button class="prev"> <img src="Prev.png" /></button>
-                <button class="play"> <img src="Play.png" /></button>
-                <button class="next"> <img src="Next.png" /></button>
-            </div>
-            <div class="progress-bar">
-                <div class="fill"></div>
-                <div class="handle"></div>
-            </div>
-        </div>
-    </div>*@
 
-    
     <p> Home Page</p>
+    <div class="dropdown">
+        <button class="dropbtn">
+            Playlists
+            <i class="fa fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+            @foreach (var item in Model.Playlists)
+            {
+                <a asp-page="/" asp-route-id="@item.PlaylistID">@item.Name</a> 
+            }
+        </div>
+    </div>
 
+    <table class="table">
+        <tbody>
+            @foreach (var item in Model.Song)
+            {
+                <tr>
+                    <td>
+                        <input type="button" onclick="@(Html.Raw(String.Format("play('{0}')", Html.Encode(item.Filepath))))" value=@item.Name />
+                    </td>
+                    <td>
+                        <a asp-page="/Artists/Details" asp-route-id="@item.Album.Artist.ArtistID"> @item.Album.Artist.Name </a>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
 </body>
 </html>
+
+
+<script>
+    function play(filepath) {
+        sessionStorage.setItem("url", filepath);
+        sessionStorage.setItem("playSong", 1);
+    }
+
+</script>

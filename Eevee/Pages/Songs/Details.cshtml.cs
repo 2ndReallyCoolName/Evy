@@ -28,7 +28,7 @@ namespace Eevee.Pages.Songs
                 return NotFound();
             }
 
-            Song = await _context.Song.FirstOrDefaultAsync(m => m.SongID == id);
+            Song = await _context.Song.Where(m => m.SongID == id).Include(x => x.Genre).Include(x => x.Album).ThenInclude(x => x.Artist).FirstOrDefaultAsync();
 
             if (Song == null)
             {

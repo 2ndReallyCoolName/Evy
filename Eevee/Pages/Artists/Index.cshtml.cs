@@ -13,11 +13,10 @@ namespace Eevee.Pages.Artists
 {
     public class IndexModel : PageModel
     {
-        private readonly Eevee.Data.EeveeContext _context;
-
+        private readonly Eevee.Data.ArtistDataAccess _access;
         public IndexModel(Eevee.Data.EeveeContext context)
         {
-            _context = context;
+            _access = new ArtistDataAccess(context);
         }
 
         public IList<Artist> Artist { get; set; }
@@ -33,15 +32,14 @@ namespace Eevee.Pages.Artists
 
         public async Task OnGetAsync()
         {
-
-            var artists = from a in _context.Artist select a;
-
             if (!string.IsNullOrEmpty(searchString))
             {
-                artists = artists.Where(s => s.Name.Contains(searchString));
+                Artist = await _access.Get(searchString).ToListAsync();
             }
-
-            Artist = await artists.ToListAsync();
+            else
+            {
+                Artist = await _access.Get("").ToListAsync();
+            }
         }
     }
 }

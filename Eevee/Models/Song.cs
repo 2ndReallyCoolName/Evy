@@ -20,7 +20,7 @@ namespace Eevee.Models
 
         public int Listens { get; set; } = 0; //
 
-        public int Rating { get; set; } = 1; //
+        public float Rating { get; set; } = 1; //
 
         public string Lyrics { get; set; } //
 

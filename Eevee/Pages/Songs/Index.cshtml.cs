@@ -7,14 +7,17 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Eevee.Data;
 using Eevee.Models;
+using javax.jws;
 
 namespace Eevee.Pages.Songs
 {
     public class IndexModel : PageModel
     {
-        private readonly Eevee.Data.EeveeContext _context;
+        public readonly Eevee.Data.EeveeContext _context;
 
         private readonly NaturalLanguage.NN.INN _textprocessor;
+
+        private readonly int like_weight = 1;
 
         public IndexModel(Eevee.Data.EeveeContext context, NaturalLanguage.NN.INN textprocessor)
         {
@@ -36,7 +39,9 @@ namespace Eevee.Pages.Songs
         {
             if (id != null)
             {
-                Song = await _context.Song.Where(s => s.Album.Artist.ArtistID == id).ToListAsync();
+                Song = await _context.Song.Where(s => s.Album.Artist.ArtistID == id).Include(x => x.Genre).Include(x => x.Album).ThenInclude(x => x.Artist).ToListAsync();
+                msg = Song.Count.ToString();
+                //Song = await _context.Song.Where(s => s.Album.Artist.ArtistID == id)
             }
             else
             {
@@ -61,9 +66,54 @@ namespace Eevee.Pages.Songs
                 }
                 else
                 {
-                    Song = await _context.Song.ToListAsync();
+                    Song = await _context.Song.Include(x => x.Genre).Include(x => x.Album).ThenInclude(x => x.Artist).ToListAsync(); 
+                    msg = Song.Count.ToString();
                 }
             }
+        }
+
+        public JsonResult OnPostIncreaseListen(string  song_id)
+        {
+            Song song = _context.Song.Where(s => s.SongID == Int32.Parse(song_id)).Include(x => x.Album).ThenInclude(x => x.Artist).FirstOrDefault();
+            song.Listens += 1;
+            Artist artist = _context.Artist.Where(a => a.ArtistID == song.Album.Artist.ArtistID).FirstOrDefault();
+            artist.Listens += 1;
+            _context.Song.Update(song);
+            _context.Artist.Update(artist);
+            _context.SaveChanges();
+            return new JsonResult("Clicked play " + song_id);
+        }
+
+        public JsonResult OnPostLike(string song_id)
+        {
+            Song song = _context.Song.Where(s => s.SongID == Int32.Parse(song_id)).Include(x => x.Album).ThenInclude(x => x.Artist).FirstOrDefault();
+            
+            song.Rating += like_weight;
+
+            Artist artist = _context.Artist.Where(a => a.ArtistID == song.Album.Artist.ArtistID).FirstOrDefault();
+
+            artist.Rating += like_weight;
+
+            _context.Song.Update(song);
+            _context.Artist.Update(artist);
+            _context.SaveChanges();
+            return new JsonResult("Liked " + song_id);
+        }
+
+        public JsonResult OnPostDislike(string song_id)
+        {
+            Song song = _context.Song.Where(s => s.SongID == Int32.Parse(song_id)).Include(x => x.Album).ThenInclude(x => x.Artist).FirstOrDefault();
+            
+            song.Rating = song.Rating - like_weight;
+
+            Artist artist = _context.Artist.Where(a => a.ArtistID == song.Album.Artist.ArtistID).FirstOrDefault();
+
+            artist.Rating -= like_weight;
+
+            _context.Song.Update(song);
+            _context.Artist.Update(artist);
+            _context.SaveChanges();
+            return new JsonResult("Disliked " + song_id);
         }
     }
 }
