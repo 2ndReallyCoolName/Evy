@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Eevee.Data;
 using Eevee.Models;
-using javax.jws;
 
 namespace Eevee.Pages.Songs
 {
@@ -35,12 +33,19 @@ namespace Eevee.Pages.Songs
 
         public string lv = "";
 
+        public IList<Playlist> Playlists { get; set; }
+
         public async Task OnGetAsync(int? id)
         {
+
+            int _id = Int32.Parse(HttpContext.User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault());
+            Playlists = _context.Playlist.Where(p => p.User.UserID == _id).ToList();
+
             if (id != null)
             {
                 Song = await _context.Song.Where(s => s.Album.Artist.ArtistID == id).Include(x => x.Genre).Include(x => x.Album).ThenInclude(x => x.Artist).ToListAsync();
                 msg = Song.Count.ToString();
+
                 //Song = await _context.Song.Where(s => s.Album.Artist.ArtistID == id)
             }
             else
@@ -70,6 +75,17 @@ namespace Eevee.Pages.Songs
                     msg = Song.Count.ToString();
                 }
             }
+        }
+
+        public JsonResult OnPostAddSong(string song_id, string pl_id)
+        {
+          
+            var playlist =_context.Playlist.Where(p=>p.PlaylistID == Int32.Parse(pl_id)).FirstOrDefault();
+            var song = _context.Song.Where(s => s.SongID == Int32.Parse(song_id)).FirstOrDefault();
+            PlaylistSongAssignment playlistSongAssignment = new PlaylistSongAssignment() { Playlist = playlist, Song = song };
+            _context.PlaylistSongAssignment.Add(playlistSongAssignment);
+            _context.SaveChanges();
+            return new JsonResult("Added song to playlist");
         }
 
         public JsonResult OnPostIncreaseListen(string  song_id)

@@ -6,6 +6,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Eevee.Data;
 using Eevee.Models;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Eevee.Pages
 {
@@ -26,31 +29,48 @@ namespace Eevee.Pages
 
         public IList<Playlist> Playlists { get; set; }
 
-        public void OnGet()
+        public Playlist Playlist { get; set; }
+
+        public async Task OnGetAsync()
         {
+            int id = Int32.Parse(HttpContext.User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).FirstOrDefault());
 
-            int id = Int32.Parse(HttpContext.User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault());
+            Playlists = await _context.Playlist.Where(p => p.User.UserID == id).ToListAsync();
 
-            Playlists = _context.Playlist.Where(p => p.User.UserID == id).ToList();
+            Playlist = Playlists.Where(p => p.Name == "Main").FirstOrDefault();
 
-            var playlist = Playlists.Where(p => p.Name == "Main").FirstOrDefault();
-            
-            Song =  _context.PlaylistSongAssignment.Where(p => p.Playlist.PlaylistID == playlist.PlaylistID).Select(s => s.Song).ToList();
-
+            Song =  await _context.PlaylistSongAssignment.Where(p => p.Playlist.PlaylistID == Playlist.PlaylistID)
+                .Include(x=>x.Song).ThenInclude(x=>x.Genre)
+                .Include(x => x.Song).ThenInclude(x => x.Album).ThenInclude(x=>x.Artist)
+                .Select(s => s.Song).ToListAsync();
         }
 
-        public void OnGetPlayList(int pid)
+        public JsonResult OnPostSelectPL(string pl_id)
         {
+            int id = Int32.Parse(HttpContext.User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).FirstOrDefault());
 
-            int id = Int32.Parse(HttpContext.User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault());
+            Playlist = _context.Playlist.Where(p => p.User.UserID == id && p.PlaylistID == Int32.Parse(pl_id)).FirstOrDefault();
 
-            Playlists = _context.Playlist.Where(p => p.User.UserID == id).ToList();
+            Song =  _context.PlaylistSongAssignment.Where(p => p.Playlist.PlaylistID == Playlist.PlaylistID)
+                .Include(x => x.Song).ThenInclude(x => x.Genre)
+                .Include(x => x.Song).ThenInclude(x => x.Album).ThenInclude(x => x.Artist)
+                .Select(s => s.Song).ToList();
 
-            var playlist = Playlists.Where(p => p.PlaylistID == pid).FirstOrDefault();
-
-            Song = _context.PlaylistSongAssignment.Where(p => p.Playlist.PlaylistID == playlist.PlaylistID).Select(s => s.Song).ToList();
-
+            return new JsonResult("changed playlist");
         }
 
+        public JsonResult OnPostRemoveSongFromPlaylist(string song_id, string pl_id)
+        {
+
+            PlaylistSongAssignment assignment = _context.PlaylistSongAssignment
+                .Where(x => x.Song.SongID == Int32.Parse(song_id) && x.Playlist.PlaylistID == Int32.Parse(pl_id)).FirstOrDefault();
+
+            if (assignment != null)
+            {
+                _context.PlaylistSongAssignment.Remove(assignment);
+                _context.SaveChanges();
+            }
+            return new JsonResult("removed song from playlist");
+        }
     }
 }
