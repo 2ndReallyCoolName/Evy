@@ -1,4 +1,4 @@
-@page
+﻿@page
 @model Eevee.Pages.Songs.IndexModel
 
 @{
@@ -6,10 +6,9 @@
 
 }
         
+<link rel="stylesheet" href="~/css/dropdown.css" />
 
 <h1>Index</h1>
-
-
 
 
 <form>
@@ -26,13 +25,7 @@
 <h4>
     @Model.msg
 </h4>
-    <div class="box">
-        <select>
-            <option>Songs</option>
-            <option>Artist</option>
-            <option>Instruments</option>
-            <option>Advertisement</option>
-        </select>
+
 <p>
     <a asp-page="Create">Create New</a>
 </p>
@@ -111,9 +104,17 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Genre.Name)
             </td>
-
-
-
+            <td>
+                <form method="post">
+                    <select id="pl-dm">
+                        @foreach (var p in Model.Playlists)
+                        {
+                            <option value=@p.PlaylistID>@p.Name</option>
+                        }
+                    </select>
+                    <input type="button" value="Add Song" onclick="@(Html.Raw(String.Format("AddSong('{0}')",  Html.Encode(item.SongID))))">
+                </form>
+            </td>
             <td>
                 @*@<a asp-page="./Edit" asp-route-id="@item.SongID">Edit</a> |*@
                 <a asp-page="./Details" asp-route-id="@item.SongID">Details</a> |
@@ -129,6 +130,7 @@
     function play(filepath, id) {
         sessionStorage.setItem("url", filepath);
         sessionStorage.setItem("playSong", 1);
+
         $.ajax({
             type: "POST",
             url: "/Songs/Index?handler=IncreaseListen",
@@ -148,6 +150,7 @@
             }
         });
     }
+
     function like(id) {
         $.ajax({
             type: "POST",
@@ -168,6 +171,7 @@
             }
         });
     }
+
     function dislike(id) {
         $.ajax({
             type: "POST",
@@ -188,4 +192,29 @@
             }
         });
     }
+
+    function AddSong(song_id) {
+        console.log(song_id);
+        var pl_id = document.getElementById("pl-dm").value;
+        console.log(pl_id);
+        $.ajax({
+            type: "POST",
+            url: "/Songs/Index?handler=AddSong",
+           headers: {
+                RequestVerificationToken:
+                    $('input:hidden[name="__RequestVerificationToken"]').val()
+            },
+            data: {song_id: song_id, pl_id : pl_id}, // passing the parameter
+            //contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (retValue) {
+                // Do something with the return value from.Net method
+                console.log(retValue);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(errorThrown);
+            }
+        });
+    }
+
 </script>
