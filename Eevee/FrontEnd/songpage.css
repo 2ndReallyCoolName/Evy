@@ -5,12 +5,39 @@ body
 
 .table
 {
+	border-collapse: collapse;
+	margin: 25px 0;
+	min-width: 400px;
 
 }
 
+.table thead tr
+{
+	text-align: left;
+	background-color: #DC143C;
+	text-align: left;
+}
+
+.table th,
+.table td
+{
+	padding: 12px 15px;
+}
+.table tbody tr
+{
+	border-bottom: 1px solid #dddddd;
+}
+
+/*.table tbody tr:nth-of-type(even)
+{
+	background-color: #F5FFFA;
+*/
+}
+>
 .fa fa-thumbs-o-up
 {
 	font-size: 24px;
+	color: green;
 }
 
 .fa fa-thumbs-o-down
@@ -23,4 +50,12 @@ body
 	color: green;
 }
 
+.fa fa-button
+{
+	font-size: 24px;
+}
 
+.material-icons
+{
+	font-size: 24px;
+}
