@@ -1,1 +1,134 @@
+@page
+@model Eevee.Pages.Songs.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+
+}
+<head>
+    <meta charset="utf-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1">      
+    <link href="homepage.css" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<h1>Song Page</h1>
+
+<form>
+    <p>
+        <input type="text" asp-for="SearchString" />
+        <input type="submit" value="Search" />
+    </p>
+</form>
+
+<h4>
+    
+</h4>
+
+<h4>
+    
+</h4>
+    <div class="box">
+        <select>
+            <option>Songs</option>
+            <option>Artist</option>
+            <option>Instruments</option>
+            <option>Advertisement</option>
+        </select>
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Song[0].Name)
+            </th>
+            <th>
+
+            </th>
+            <th>
+                Artist
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Song[0].Duration)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Song[0].Listens)
+            </th>
+            <th>
+                Likes
+            </th>
+            <th>
+                Album
+            </th>
+            <th>
+                Genre
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Song)
+        {
+        <tr>
+            <td>
+                <form method="post">
+                     
+                    <button class="btn btn1">Play</button>
+                
+                </form>
+
+            </td>
+            <td>
+                Sunflower
+            </td>
+            <td>
+
+                <form method="post">
+                    <button class="btn btn2">Like</button>
+                </form>
+               
+                <form method="post">
+                    <button class="btn btn3"></button>
+                </form>
+              
+
+            </td>
+
+            <td>
+                Post Malone
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Duration)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Listens)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rating)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Album.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Genre.Name)
+            </td>
+
+
+
+            <td>
+                @*@<a asp-page="./Edit" asp-route-id="@item.SongID">Edit</a> |*@
+                <a asp-page="./Details" asp-route-id="@item.SongID">Details</a> |
+                @*<a asp-page="./Delete" asp-route-id="@item.SongID">Delete</a>*@
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
 
