@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Eevee.Data;
 using NaturalLanguage;
+using System.Security.Claims;
 
 namespace Eevee
 {

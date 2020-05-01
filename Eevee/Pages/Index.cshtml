@@ -2,8 +2,6 @@
 @model IndexModel
 @{
     ViewData["Title"] = " Welcome to Home page";
-    //var j = User.Claims;
-    //var id = User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault();
 }
 
 
@@ -20,61 +18,65 @@
 
     <p> Home Page</p>
 
-    <form method="post">
-        <select id="pl-dm">
-            @foreach (var p in Model.Playlists)
-            {
-                <option value=@p.PlaylistID>@p.Name</option>
-            }
-        </select>
-        <input type="button" value="Select Playlist" onclick="selectPL()">
-    </form>
-    
+    @if (HttpContext.User.Identity.IsAuthenticated)
+    {
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Song[0].Name)
-                </th>
-                <th>
-                    Artist
-                </th>
-                <th>
-                    Genre
-                </th>
-                <th>
+        <form method="post">
+            <select id="pl-dm">
+                @foreach (var p in Model.Playlists)
+                {
+                    <option value=@p.PlaylistID>@p.Name</option>
+                }
+            </select>
+            <input type="button" value="Select Playlist" onclick="selectPL()">
+        </form>
 
-                </th>
-                <th>
 
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Song)
-            {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Album.Artist.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Genre.Name)
-                </td>
-                <td>
-                    <input type="button" onclick="@(Html.Raw(String.Format("play('{0}')", Html.Encode(item.Filepath))))" value="Play" />
-                </td>
-                <td>
-                    <input type="button" onclick="@(Html.Raw(String.Format("remove('{0}')", Html.Encode(item.SongID))))" value="Remove" />
-                </td>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Song[0].Name)
+                    </th>
+                    <th>
+                        Artist
+                    </th>
+                    <th>
+                        Genre
+                    </th>
+                    <th>
 
-            </tr>
-            }
-        </tbody>
-    </table>
+                    </th>
+                    <th>
+
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Song)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Album.Artist.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Genre.Name)
+                        </td>
+                        <td>
+                            <input type="button" onclick="@(Html.Raw(String.Format("play('{0}')", Html.Encode(item.Filepath))))" value="Play" />
+                        </td>
+                        <td>
+                            <input type="button" onclick="@(Html.Raw(String.Format("remove('{0}')", Html.Encode(item.SongID))))" value="Remove" />
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </body>
 </html>
 

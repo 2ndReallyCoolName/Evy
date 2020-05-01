@@ -102,6 +102,8 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Genre.Name)
             </td>
+
+            @if (HttpContext.User.Identity.IsAuthenticated){
             <td>
                 <form method="post">
                     <select id="pl-dm">
@@ -113,6 +115,7 @@
                     <input type="button" value="Add Song" onclick="@(Html.Raw(String.Format("AddSong('{0}')",  Html.Encode(item.SongID))))">
                 </form>
             </td>
+            }
             <td>
                 @*@<a asp-page="./Edit" asp-route-id="@item.SongID">Edit</a> |*@
                 <a asp-page="./Details" asp-route-id="@item.SongID">Details</a> |

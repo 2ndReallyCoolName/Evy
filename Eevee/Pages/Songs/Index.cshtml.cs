@@ -37,9 +37,11 @@ namespace Eevee.Pages.Songs
 
         public async Task OnGetAsync(int? id)
         {
-
-            int _id = Int32.Parse(HttpContext.User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault());
-            Playlists = _context.Playlist.Where(p => p.User.UserID == _id).ToList();
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                int _id = Int32.Parse(HttpContext.User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault());
+                Playlists = _context.Playlist.Where(p => p.User.UserID == _id).ToList();
+            }
 
             if (id != null)
             {

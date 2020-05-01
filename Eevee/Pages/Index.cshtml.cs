@@ -33,16 +33,19 @@ namespace Eevee.Pages
 
         public async Task OnGetAsync()
         {
-            int id = Int32.Parse(HttpContext.User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).FirstOrDefault());
+            if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                int id = Int32.Parse(HttpContext.User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).FirstOrDefault());
 
-            Playlists = await _context.Playlist.Where(p => p.User.UserID == id).ToListAsync();
+                Playlists = await _context.Playlist.Where(p => p.User.UserID == id).ToListAsync();
 
-            Playlist = Playlists.Where(p => p.Name == "Main").FirstOrDefault();
+                Playlist = Playlists.Where(p => p.Name == "Main").FirstOrDefault();
 
-            Song =  await _context.PlaylistSongAssignment.Where(p => p.Playlist.PlaylistID == Playlist.PlaylistID)
-                .Include(x=>x.Song).ThenInclude(x=>x.Genre)
-                .Include(x => x.Song).ThenInclude(x => x.Album).ThenInclude(x=>x.Artist)
-                .Select(s => s.Song).ToListAsync();
+                Song = await _context.PlaylistSongAssignment.Where(p => p.Playlist.PlaylistID == Playlist.PlaylistID)
+                    .Include(x => x.Song).ThenInclude(x => x.Genre)
+                    .Include(x => x.Song).ThenInclude(x => x.Album).ThenInclude(x => x.Artist)
+                    .Select(s => s.Song).ToListAsync();
+            }
         }
 
         public JsonResult OnPostSelectPL(string pl_id)
