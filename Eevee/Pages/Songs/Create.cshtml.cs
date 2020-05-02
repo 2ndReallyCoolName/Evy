@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using VSpace = NaturalLanguage.vector.VectorSpace;
 using System.Globalization;
+using System;
 
 namespace Eevee.Pages.Songs
 {
@@ -17,6 +18,7 @@ namespace Eevee.Pages.Songs
 
         private readonly NaturalLanguage.NN.INN _textprocessor;
 
+        private readonly AudioAnalysis.Reader _reader;
 
         private IWebHostEnvironment _environment;
 
@@ -26,12 +28,12 @@ namespace Eevee.Pages.Songs
 
         public string error = "";
 
-        public CreateModel(Eevee.Data.EeveeContext context, NaturalLanguage.NN.INN textprocessor, IWebHostEnvironment environment)
+        public CreateModel(Eevee.Data.EeveeContext context, NaturalLanguage.NN.INN textprocessor, IWebHostEnvironment environment, AudioAnalysis.Reader reader)
         {
             _context = context;
             _textprocessor = textprocessor;
             _environment = environment;
-
+            _reader = reader;
         }
 
         public IActionResult OnGet()
@@ -110,6 +112,11 @@ namespace Eevee.Pages.Songs
                     NaturalLanguage.vector.VectorSpace.Add(_textprocessor.PredictText(Song.Lyrics), 
                     NaturalLanguage.vector.VectorSpace.Scale(artist_contrib, NaturalLanguage.vector.VectorSpace.ToArray(artist.WordVec))),
                     NaturalLanguage.vector.VectorSpace.Scale(genre_contrib, NaturalLanguage.vector.VectorSpace.ToArray(genre.WordVec))));
+
+            _reader.Read(Path.Combine(Environment.CurrentDirectory, "wwwroot/music",
+                filename));
+
+            Song.FreqVec = AudioAnalysis.Compare.ToString(AudioAnalysis.Compare.ToIntArray(AudioAnalysis.Fourier.FFT(_reader.GetStream(), 200, _reader.GetSampleRate())[1]));
 
             _context.Song.Add(Song);
             await _context.SaveChangesAsync();

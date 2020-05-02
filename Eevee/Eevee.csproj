@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AudioAnalysis\AudioAnalysis.csproj" />
     <ProjectReference Include="..\NaturalLanguage\NaturalLanguage.csproj" />
   </ItemGroup>
 

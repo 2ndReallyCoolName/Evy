@@ -45,6 +45,9 @@ namespace Eevee
 
             NaturalLanguage.NN.INN W2v = new NaturalLanguage.NN.Word2Vec();
             services.AddSingleton<NaturalLanguage.NN.INN>(W2v);
+
+            AudioAnalysis.Reader reader = new AudioAnalysis.Reader();
+            services.AddSingleton<AudioAnalysis.Reader>(reader);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

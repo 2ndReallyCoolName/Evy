@@ -17,7 +17,7 @@ namespace Eevee.Data
         ArtistDataAccess _access;
 
         [TestMethod]
-        public async Task Test()
+        public Task Test()
         {
             ArtistDataAccess _access = new ArtistDataAccess(mockContext.Object);
 
@@ -31,7 +31,7 @@ namespace Eevee.Data
                 WordVec = "1,2,3"
             };
 
-            await _access.Create(999999, artist);
+            _access.Create(999999, artist);
 
             mockSet.Verify(m => m.Add(It.IsAny<Artist>()), Times.Once());
             mockContext.Verify(m => m.SaveChanges(), Times.Once());
@@ -45,9 +45,11 @@ namespace Eevee.Data
             Assert.AreEqual(artist2.Description, artist.Description);
             Assert.AreEqual(artist2.WordVec, artist.WordVec);
 
-            await _access.Delete(999999);
+            _access.Delete(999999);
 
             Assert.IsTrue(_access.Exists(999999));
+
+            return Task.FromResult(string.Empty);
         }
     }
 
