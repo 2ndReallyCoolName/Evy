@@ -45,6 +45,7 @@
 
   <ItemGroup>
     <Folder Include="Pages\Advertisers\" />
+    <Folder Include="wwwroot\music\" />
   </ItemGroup>
 
 </Project>

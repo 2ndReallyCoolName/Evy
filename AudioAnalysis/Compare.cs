@@ -49,7 +49,7 @@ namespace AudioAnalysis
 
         public static string ToString(int[] buffer)
         {
-            return String.Join(",", buffer[1]);
+            return String.Join(",", buffer);
         }
 
         public static int[] ToArray(string vector)

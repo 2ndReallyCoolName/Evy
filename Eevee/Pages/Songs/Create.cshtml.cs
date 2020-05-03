@@ -116,7 +116,10 @@ namespace Eevee.Pages.Songs
             _reader.Read(Path.Combine(Environment.CurrentDirectory, "wwwroot/music",
                 filename));
 
-            Song.FreqVec = AudioAnalysis.Compare.ToString(AudioAnalysis.Compare.ToIntArray(AudioAnalysis.Fourier.FFT(_reader.GetStream(), 200, _reader.GetSampleRate())[1]));
+            double[][] res = AudioAnalysis.Fourier.FFT(_reader.GetStream(), 200, _reader.GetSampleRate());
+            int[] f = AudioAnalysis.Compare.ToIntArray(res[1]);
+
+            Song.FreqVec = AudioAnalysis.Compare.ToString(f);
 
             _context.Song.Add(Song);
             await _context.SaveChangesAsync();

@@ -33,6 +33,7 @@ namespace Eevee.Pages.Songs
 
         public string lv = "";
 
+
         public IList<Playlist> Playlists { get; set; }
 
         public async Task OnGetAsync(int? id)
@@ -54,20 +55,54 @@ namespace Eevee.Pages.Songs
             {
                 if (SearchString.Length > 0)
                 {
-                    List<Song> songs = _context.Song.ToList();
+                    SearchString = SearchString.ToLower();
 
-                    var word_vector = _textprocessor.PredictText(SearchString);
-                    lv = NaturalLanguage.vector.VectorSpace.ConvertToString(word_vector);
+                    List<Song> songs = _context.Song.Include(x => x.Genre).Include(x => x.Album).ThenInclude(x => x.Artist).ToList();
+
 
                     if (!string.IsNullOrEmpty(SearchString))
                     {
-                        foreach (var song in songs)
+
+                        Song s = _context.Song.Where(x=>x.Name.ToLower() == SearchString).FirstOrDefault();
+
+                        if (s != null)
                         {
-                            msg += song.Name + ": " + NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(song.WordVec)) + ", ";
+                            int[] f = AudioAnalysis.Compare.ToArray(s.FreqVec);
+                            songs = songs.OrderByDescending(x => AudioAnalysis.Compare.Similarity(f, AudioAnalysis.Compare.ToArray(x.FreqVec))).ToList();
+
+                        }
+                        else
+                        {
+                            Artist a = _context.Artist.Where(x => x.Name.ToLower() == SearchString).FirstOrDefault();
+
+                            if (a != null)
+                            {
+                                songs = _context.Song.Where(s => s.Album.Artist.ArtistID == a.ArtistID).ToList();
+                            }
+                            else
+                            {
+                                Genre g = _context.Genre.Where(x => x.Name.ToLower() == SearchString).FirstOrDefault();
+
+                                if (g != null)
+                                {
+                                    songs = _context.Song.Where(s => s.Genre.GenreID == g.GenreID).ToList();
+                                }
+                                else
+                                {
+                                    var word_vector = _textprocessor.PredictText(SearchString);
+
+                                    foreach (var song in songs)
+                                    {
+                                        msg += song.Name + ": " + NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(song.WordVec)) + ", ";
+                                    }
+
+                                    songs.Sort((a, b) => NaturalLanguage.vector.VectorSpace.Loss(word_vector,
+                                        NaturalLanguage.vector.VectorSpace.ToArray(a.WordVec)).CompareTo(NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(b.WordVec))));
+                                }
+
+                            }
                         }
 
-                        songs.Sort((a, b) => NaturalLanguage.vector.VectorSpace.Loss(word_vector,
-                            NaturalLanguage.vector.VectorSpace.ToArray(a.WordVec)).CompareTo(NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(b.WordVec))));
                     }
                     Song = songs;
                 }

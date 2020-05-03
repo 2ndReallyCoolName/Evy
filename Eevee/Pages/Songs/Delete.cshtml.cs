@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Eevee.Data;
 using Eevee.Models;
+using System.IO;
 
 namespace Eevee.Pages.Songs
 {
@@ -49,6 +50,8 @@ namespace Eevee.Pages.Songs
 
             if (Song != null)
             {
+                string filepath = Path.Combine(Environment.CurrentDirectory, "wwwroot", Song.Filepath.TrimStart('/'));
+                System.IO.File.Delete(filepath);
                 _context.Song.Remove(Song);
                 await _context.SaveChangesAsync();
             }

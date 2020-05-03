@@ -35,17 +35,17 @@ namespace AudioAnalysis
         }
 
 
-        public static double[] Sin(int[] fs, float time, int sampling_rate, short[] amps)
+        public static short[] Sin(int[] fs, float time, int sampling_rate, double[] amps)
         {
-            double[] v = new double[(int)(time * sampling_rate)];
+            short[] v = new short[(int)(time * sampling_rate)];
             float dt = 1.0f / sampling_rate;
             float t = 0;
             for (var k = 0; k < v.Length; k += 1)
             {
-                double val = 0;
+                short val = 0;
                 for (int j = 0; j < fs.Length; j++)
                 {
-                    val += amps[j] * Math.Sin(2 * Math.PI * fs[j] * t);
+                    val += Convert.ToInt16(amps[j] * Math.Sin(2 * Math.PI * fs[j] * t));
                 }
                 v[k] = val;
                 t += dt;
