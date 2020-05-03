@@ -1,6 +1,6 @@
 body
 {
-
+	background: black;
 }
 
 .table
@@ -8,14 +8,20 @@ body
 	border-collapse: collapse;
 	margin: 25px 0;
 	min-width: 400px;
+	color: white;
 
 }
 
+.title
+{
+	color: white;
+}
 .table thead tr
 {
 	text-align: left;
-	background-color: #DC143C;
+	background-color: #3498db;
 	text-align: left;
+	color: white;
 }
 
 .table th,
@@ -28,12 +34,8 @@ body
 	border-bottom: 1px solid #dddddd;
 }
 
-.table tbody tr:nth-of-type(even)
-{
-	background-color: #F5FFFA;
 
-}
->
+
 .fa fa-thumbs-o-up
 {
 	font-size: 24px;
