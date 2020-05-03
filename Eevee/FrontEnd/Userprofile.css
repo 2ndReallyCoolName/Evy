@@ -1,6 +1,6 @@
 body 
 {
-	background: #16a085;
+	background: #2f3640;
 }
 
 .title
@@ -45,12 +45,7 @@ body
 	color: white;
 }
 
-.fas fa-headphones-alt
+.fas fa-user
 {
-	font-size: 24px;
-}
-
-.far fa-star
-{
-	font-size: 24px;
+	font-size: 24px
 }
