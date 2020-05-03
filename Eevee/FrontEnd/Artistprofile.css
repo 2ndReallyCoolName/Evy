@@ -1,11 +1,12 @@
 body 
 {
-	
+	background: black;
 }
 
 .title
 {
 	text-align: center;
+	color: white;
 }
 .Profile
 {
@@ -14,7 +15,7 @@ body
 	max-width: 500px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 	padding: 50px;
-	background-color: #42455a;
+	background-color: black;
 	margin-left: auto;
 	margin-right: auto;
 
