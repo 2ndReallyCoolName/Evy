@@ -19,19 +19,73 @@ namespace AudioAnalysis
                 fftComplex[i] = new Complex(buffer[i], 0.0);
             }
 
-            int sz = AudioAnalysis.Fourier.nearest_power_2(fftComplex.Length);
+            int sz = nearest_power_2(fftComplex.Length);
 
-            Complex[] data = new Complex[sz];
+            Complex[] frequency_spectrum = new Complex[sz];
+            int source_index = 0;
+            int remaining_length = fftComplex.Length;
 
-            Array.Copy(fftComplex, data, sz);
+            Console.WriteLine(remaining_length);
 
-            double[] result = new double[sz];
+            while (remaining_length > 32)
+            {
 
-            FourierTransform.FFT(data, FourierTransform.Direction.Forward);
+                Complex[] data = new Complex[sz];
 
-            for (int i = 0; i < data.Length; i++)
-                result[i] = data[i].Magnitude;
+                Array.Copy(fftComplex, source_index, data, 0, sz);
+
+                FourierTransform.FFT(data, FourierTransform.Direction.Forward);
+
+                Add(ref frequency_spectrum, ref data);
+
+                source_index += sz;
+
+                remaining_length -= sz;
+
+                sz = nearest_power_2(remaining_length);
+
+            }
+
+            double[] result = new double[frequency_spectrum.Length];
+
+            for (int i = 0; i < frequency_spectrum.Length; i++)
+                result[i] = frequency_spectrum[i].Magnitude;
             return result;
+        }
+
+
+        public static void Add(ref Complex[] a1, ref Complex[] a2)
+        {
+            int skip = a1.Length / a2.Length;
+            double weight = 1 / (double)skip;
+            int a2_index = 0;
+
+            for (int i = 0; i < a1.Length; i += skip)
+            {
+                for (int j = i; j < i + skip; j++)
+                {
+                    a1[j] += weight * a2[a2_index];
+                }
+                a2_index += 1;
+            }
+        }
+
+        public static KeyValuePair<double, int>[] Reduce(KeyValuePair<double, int>[] arr, int sample_rate)
+        {
+            int l = arr.Length;
+            HashSet<int> H = new HashSet<int>();
+            IList<KeyValuePair<double, int>> r = new List<KeyValuePair<double, int>>();
+            int e = 0;
+            for (int i = 0; i < l; i++)
+            {
+                e = Convert.ToInt32(Frequency(sample_rate, 2 * l, arr[i].Value));
+                if (!H.Contains(e) && (e >= 20 && e <= 20000))
+                {
+                    H.Add(e);
+                    r.Add(new KeyValuePair<double, int>(arr[i].Key, e));
+                }
+            }
+            return r.ToArray();
         }
 
 
@@ -85,19 +139,18 @@ namespace AudioAnalysis
 
         public static double[][] FFT(short[] buffer, int k, int sample_rate)
         {
-            double[] data = AudioAnalysis.Fourier.FirstHalf(AudioAnalysis.Fourier.Transform(buffer));
+            double[] data = FirstHalf(Transform(buffer));
 
-            var m = data.Select((x, i) => new KeyValuePair<double, int>(x, i))
+            KeyValuePair<double, int>[] m = data.Select((x, i) => new KeyValuePair<double, int>(x, i))
                 .OrderByDescending(x => x.Key).ToArray();
 
-            m = m.Where(x => ((AudioAnalysis.Fourier.Frequency(sample_rate, 2 * data.Length, x.Value) >= 20) &&
-            (AudioAnalysis.Fourier.Frequency(sample_rate, 2 * data.Length, x.Value) <= 20000))).Take(k).ToArray();
-
+            m = Reduce(m, sample_rate).Take(k).ToArray();
+            
             double[] vals = m.Select(x => x.Key).ToArray();
-            double[] idxs = m.Select(x => AudioAnalysis.Fourier.Frequency(sample_rate, 2 * data.Length, x.Value)).ToArray();
+            double[] idxs = m.Select(x => (double)x.Value).ToArray();
             return new double[][] { vals, idxs };
         }
 
-
     }
 }
+ 

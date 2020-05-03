@@ -88,13 +88,13 @@ namespace Eevee.Data
 
             _context.Artist.Add(Artist);
 
-            UserAccountTypeAssignment UATA = new UserAccountTypeAssignment
-            {
-                AccountType = _context.AccountType.FirstOrDefault(a => a.Name == "Artist"),
-                User = _context.User.FirstOrDefault(u => u.UserID == id)
-            };
+            UserAccountTypeAssignment uata = _context.UserAccountTypeAssignment.Where(x => x.User.UserID == id).FirstOrDefault();
 
-            _context.UserAccountTypeAssignment.Add(UATA);
+            AccountType accountType = _context.AccountType.Single(a => a.AccountTypeID == 1);
+
+            uata.AccountType = accountType;
+
+            //_context.UserAccountTypeAssignment.Update(uata);
 
             await _context.SaveChangesAsync();
         }
