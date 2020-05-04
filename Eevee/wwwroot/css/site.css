@@ -24,10 +24,13 @@ a {
   border-color: #1861ac;
 }
 
+.container{
+    background-color:aliceblue;
+}
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 @media (min-width: 768px) {
   html {
@@ -51,6 +54,10 @@ button.accept-policy {
   line-height: inherit;
 }
 
+.links{
+    color:aliceblue;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -59,15 +66,18 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
 }
+
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+    background-color: grey;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px; /* Vertically center the text there */
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
 .main{

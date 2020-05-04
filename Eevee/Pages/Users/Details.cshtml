@@ -3,56 +3,78 @@
 
 @{
     ViewData["Title"] = "Details";
+    string ac_id = User.Claims.Where(c => c.Type == "AccountTypeID").Select(c => c.Value).SingleOrDefault();
+    if(ac_id == null)
+    {
+        ac_id = "2";
+    }
+    string _id = User.Claims.Where(c => c.Type == "UserID").Select(c => c.Value).SingleOrDefault();
+    int id = 0;
+    if(_id != null)
+    {
+        id = Int32.Parse(_id);
+    }
 }
 
-<h1>Profile</h1>
 
-<div>
-    <h4>_User</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model._User.UserID)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model._User.UserID)
-        </dd>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="/assets/favicon.ico">
+    <link href="~/css/profile.css" rel="stylesheet" type="text/css">
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+</head>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model._User.Username)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model._User.Username)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model._User.Password)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model._User.Password)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model._User.Email)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model._User.Email)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model._User.Image)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model._User.Image)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model._User.UserID">Edit | </a>
-    @if (Model.AccountType.AccountTypeID == 1)
-    {
-        <a asp-page="/Artists/Details" asp-route-id="@Model._User.UserID">Artist Profile | </a> 
-    }
-    else
-    {
-    <a asp-page="/Artists/Create" asp-route-id="@Model._User.UserID">Become an Artist | </a> 
-    }
-    <a asp-page="/Advertisers/Create" asp-route-id="@Model._User.UserID">Advertise | </a>
-</div>
+
+<body>
+    <div class="title"> <h1> Profile </h1></div>
+    <div class="Profile">
+        <div class="col-sm-10">
+            <img src=@Html.DisplayFor(model => model._User.Image) class="profile__image">
+        </div>
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model._User.Username)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model._User.Username)
+            </dd>
+            @if (id == Model._User.UserID)
+            {
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model._User.Password)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model._User.Password)
+                </dd>
+            }
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model._User.Email)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model._User.Email)
+            </dd>
+        </dl>
+    </div>
+    <div>
+        @if (id == Model._User.UserID)
+        {
+            <a asp-page="./Edit" asp-route-id="@Model._User.UserID">Edit | </a>
+
+            @if (Model.AccountType.AccountTypeID == 1)
+            {
+                <a asp-page="/Artists/Details" asp-route-id="@Model._User.UserID">Artist Profile | </a>
+            }
+            else
+            {
+                <a asp-page="/Artists/Create" asp-route-id="@Model._User.UserID">Become an Artist | </a>
+            }
+            <a asp-page="/Advertisers/Create" asp-route-id="@Model._User.UserID">Advertise | </a>
+        }
+        else
+        {
+            <a asp-page="/Artists/Details" asp-route-id="@Model._User.UserID">Artist Profile | </a>
+        }
+    </div>
+</body>

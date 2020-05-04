@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Eevee.Models;
+using Vspace = NaturalLanguage.vector.VectorSpace;
 
 namespace Eevee.Pages.Songs
 {
@@ -47,9 +48,7 @@ namespace Eevee.Pages.Songs
             if (id != null)
             {
                 Song = await _context.Song.Where(s => s.Album.Artist.ArtistID == id).Include(x => x.Genre).Include(x => x.Album).ThenInclude(x => x.Artist).ToListAsync();
-                msg = Song.Count.ToString();
 
-                //Song = await _context.Song.Where(s => s.Album.Artist.ArtistID == id)
             }
             else
             {
@@ -68,8 +67,7 @@ namespace Eevee.Pages.Songs
                         if (s != null)
                         {
                             int[] f = AudioAnalysis.Compare.ToArray(s.FreqVec);
-                            songs = songs.OrderByDescending(x => AudioAnalysis.Compare.Similarity(f, AudioAnalysis.Compare.ToArray(x.FreqVec))).ToList();
-
+                            songs = songs.OrderByDescending(x => AudioAnalysis.Compare.Similarity(f, AudioAnalysis.Compare.ToArray(x.FreqVec)) + 25*x.Rating/(double)x.Listens).ToList();
                         }
                         else
                         {
@@ -78,6 +76,7 @@ namespace Eevee.Pages.Songs
                             if (a != null)
                             {
                                 songs = _context.Song.Where(s => s.Album.Artist.ArtistID == a.ArtistID).ToList();
+                                songs = songs.OrderByDescending(x => x.Rating / (double)x.Listens).ToList();
                             }
                             else
                             {
@@ -86,20 +85,16 @@ namespace Eevee.Pages.Songs
                                 if (g != null)
                                 {
                                     songs = _context.Song.Where(s => s.Genre.GenreID == g.GenreID).ToList();
+                                    songs = songs.OrderByDescending(x => x.Rating / (double)x.Listens).ToList();
                                 }
                                 else
                                 {
                                     var word_vector = _textprocessor.PredictText(SearchString);
 
-                                    foreach (var song in songs)
-                                    {
-                                        msg += song.Name + ": " + NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(song.WordVec)) + ", ";
-                                    }
-
-                                    songs.Sort((a, b) => NaturalLanguage.vector.VectorSpace.Loss(word_vector,
-                                        NaturalLanguage.vector.VectorSpace.ToArray(a.WordVec)).CompareTo(NaturalLanguage.vector.VectorSpace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(b.WordVec))));
+                                    songs.Sort((a, b) => 
+                                    (Vspace.Loss(word_vector, Vspace.ToArray(a.WordVec)) - (a.Rating/Math.Pow(Math.E, -a.Listens)))
+                                    .CompareTo(Vspace.Loss(word_vector, NaturalLanguage.vector.VectorSpace.ToArray(b.WordVec)) - (a.Rating / Math.Pow(Math.E, -a.Listens))));
                                 }
-
                             }
                         }
 
@@ -108,8 +103,7 @@ namespace Eevee.Pages.Songs
                 }
                 else
                 {
-                    Song = await _context.Song.Include(x => x.Genre).Include(x => x.Album).ThenInclude(x => x.Artist).ToListAsync(); 
-                    msg = Song.Count.ToString();
+                    Song = await _context.Song.Include(x => x.Genre).Include(x => x.Album).ThenInclude(x => x.Artist).ToListAsync();                     
                 }
             }
         }

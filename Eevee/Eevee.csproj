@@ -48,4 +48,15 @@
     <Folder Include="wwwroot\music\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\css\Artistprofile.css" />
+    <None Include="wwwroot\css\profile.css" />
+    <None Include="wwwroot\css\Audioplay.css" />
+    <None Include="wwwroot\css\Homepage.css" />
+    <None Include="wwwroot\css\Signin.css" />
+    <None Include="wwwroot\css\songpage.css" />
+    <None Include="wwwroot\css\Songsdetails.css" />
+    <None Include="wwwroot\css\Userprofile.css" />
+  </ItemGroup>
+
 </Project>
