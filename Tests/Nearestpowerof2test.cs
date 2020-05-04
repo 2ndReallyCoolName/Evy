@@ -8,15 +8,17 @@ namespace Tests
         [TestMethod]
         public void TestMethod1()
         {
-            int pwr = 1;
-            int x;
+            int x = 10;
 
-            while (pwr <= x)
+            if (x <= 0)
             {
-                pwr = pwr << 1;
+                return 0;
             }
 
-            return pwr;
+            else {
+                x.nearest_power_2();
+            }
+
 
 
 
