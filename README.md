@@ -20,7 +20,7 @@ Brandon Ganesh
 
 Sean King: 
 - Testing of Audio Analysis functions. 
--Comparison of different vector values. 
+- Comparison of different vector values. 
 - Testing of the Natural Language Function for the Vector Space class.
 
 Vamsi Avinash Gunji:
