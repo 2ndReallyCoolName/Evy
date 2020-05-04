@@ -8,8 +8,8 @@ namespace Tests
         [TestMethod]
         public void TestMethod1()
         {
-            int[] fs1 = { 26, 29, 27, 30 };
-            int[] fs2 = { 32, 23, 28, 20 };
+            int[] fs3 = { 26, 29, 27, 30 };
+            int[] fs4 = { 32, 23, 28, 20 };
             Assert.AreEqual(AudioAnalysis.Compare.Similarity(fs1, fs2), 100);
 
             int[] fs = { 40, 60, 80, 100, 200 }; double[] amps = { 5, 3, 10, 20, 4 };
