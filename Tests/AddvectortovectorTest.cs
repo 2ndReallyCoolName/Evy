@@ -8,13 +8,13 @@ namespace Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Vector vec1 = new Vector(25, 30);
-            Vector vec2 = new Point(22, 29);
+            Vector vector1 = new Vector(25, 30);
+            Vector vector2 = new Vector(22, 29);
             Vector sum = new Vector();
 
-            vec1 += vec2;
+            vector1 += vector2;
 
-            return vec1;
+            return vector1;
 
 
 
