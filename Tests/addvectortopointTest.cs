@@ -8,8 +8,8 @@ namespace Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Vector vec1 = new Vector(5, 8);
-            Point v = new Point(6, 9);
+            Vector vec1 = new Vector(23, 42);
+            Point v = new Point(61, 92);
             Point sum = new Point();
 
             sum = Vector.Add(v, vec1);
