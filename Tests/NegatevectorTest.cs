@@ -8,13 +8,13 @@ namespace Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Vector vec1 = new Vector(27, 50);
+            Vector vector1 = new Vector(27, 50);
             
             Vector negate = new Vector();
 
-            negate = vec1 * -1;
+            negate = vector1 * -1;
 
-            return vec1;
+            return vector1;
 
 
 
