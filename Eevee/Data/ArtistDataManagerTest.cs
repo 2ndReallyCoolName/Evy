@@ -14,10 +14,10 @@ namespace Eevee.Data
     {
         Mock<DbSet<Artist>> mockSet = new Mock<DbSet<Artist>>();
         Mock<EeveeContext> mockContext = new Mock<EeveeContext>();
-        ArtistDataAccess _access;
+        ArtistDataAccess _access = null;
 
         [TestMethod]
-        public Task Test()
+        public void Test()
         {
             ArtistDataAccess _access = new ArtistDataAccess(mockContext.Object);
 
@@ -49,7 +49,6 @@ namespace Eevee.Data
 
             Assert.IsTrue(_access.Exists(999999));
 
-            return Task.FromResult(string.Empty);
         }
     }
 

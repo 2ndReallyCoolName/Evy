@@ -107,11 +107,8 @@ namespace Eevee.Pages.Songs
 
             NaturalLanguage.vector.VectorSpace.Scale(genre_contrib, NaturalLanguage.vector.VectorSpace.ToArray(genre.WordVec));
 
-            Song.WordVec = NaturalLanguage.vector.VectorSpace.ConvertToString(
-                NaturalLanguage.vector.VectorSpace.Add(
-                    NaturalLanguage.vector.VectorSpace.Add(_textprocessor.PredictText(Song.Lyrics), 
-                    NaturalLanguage.vector.VectorSpace.Scale(artist_contrib, NaturalLanguage.vector.VectorSpace.ToArray(artist.WordVec))),
-                    NaturalLanguage.vector.VectorSpace.Scale(genre_contrib, NaturalLanguage.vector.VectorSpace.ToArray(genre.WordVec))));
+            Song.WordVec = VSpace.ConvertToString(
+                VSpace.Normalize(VSpace.Add(_textprocessor.PredictText(Song.Lyrics), _textprocessor.PredictText(Song.Name))));
 
             _reader.Read(Path.Combine(Environment.CurrentDirectory, "wwwroot/music",
                 filename));

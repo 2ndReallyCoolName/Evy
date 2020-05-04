@@ -38,19 +38,17 @@ namespace NaturalLanguage.vector
 
         public static float[] Normalize(float[] vector)
         {
-            float sum = 0;
-            for (int i = 0; i < vector.Length; i++)
-            {
-                sum += vector[i];
-            }
-            if(sum != 0)
+            float[] v = new float[vector.Length];
+            float mag = Magnitude(vector);
+
+            if (mag != 0)
             {
                 Parallel.For(0, vector.Length, i =>
                 {
-                    vector[i] = vector[i] / sum;
+                    v[i] = vector[i] / mag;
                 });
             }
-            return vector;
+            return v;
         }
 
 
@@ -60,14 +58,14 @@ namespace NaturalLanguage.vector
             double sum = 0;
             for (int i = 0; i < v1.Length; i++)
             {
-                sum += Math.Pow((v1[i] - v2[i]), 2) / n;
+                sum += ((double)1 / (double)n) * Math.Pow((v1[i] - v2[i]), 2) / n;
             }
             return (float)Math.Sqrt(sum);
         }
 
         public static float Loss(float[] v1, float[] v2)
         {
-            float dot= 0, mag1 = 0, mag2 = 0;
+            float dot = 0, mag1 = 0, mag2 = 0;
             Thread t1 = new Thread(() => dot = DotProduct(v1, v2));
             Thread t2 = new Thread(() => mag1 = Magnitude(v1));
             Thread t3 = new Thread(() => mag2 = Magnitude(v2));
@@ -79,7 +77,7 @@ namespace NaturalLanguage.vector
         public static float Magnitude(float[] v)
         {
             double sum = 0;
-            for(int i = 0; i < v.Length; i ++)
+            for (int i = 0; i < v.Length; i++)
             {
                 sum += Math.Pow((v[i]), 2);
             }
@@ -91,7 +89,7 @@ namespace NaturalLanguage.vector
             float res = 0;
             for (int i = 0; i < v1.Length; i++)
             {
-                res += v1[i]*v2[i];
+                res += v1[i] * v2[i];
             }
             return res;
         }
@@ -115,6 +113,23 @@ namespace NaturalLanguage.vector
             return string.Join(",", vector);
         }
 
+        public static float[] HadamardProduct(float[] v1, float[] v2)
+        {
+            float[] r = new float[v1.Length];
+            for (int i = 0; i < v1.Length; i++)
+            {
+                r[i] = v1[i] * v2[i];
+            }
+            return r;
+        }
+
+        public static float[] Ones(int size)
+        {
+            float[] v = new float[size];
+            for (int i = 0; i < size; i++)
+                v[i] = 1;
+            return v;
+        }
 
     }
 }

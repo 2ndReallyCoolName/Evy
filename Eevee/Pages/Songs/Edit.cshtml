@@ -5,6 +5,8 @@
     ViewData["Title"] = "Edit";
 }
 
+<h1>@Model.error</h1>
+
 <h1>Edit</h1>
 
 <h4>Song</h4>
@@ -36,12 +38,12 @@
                 <span asp-validation-for="Song.Lyrics" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Song.Genre.Name" class="control-label"></label>
+                <label asp-for="Song.Genre.Name" class="control-label">Genre</label>
                 <input asp-for="Song.Genre.Name" class="form-control" />
                 <span asp-validation-for="Song.Genre.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Song.Album.Name" class="control-label"></label>
+                <label asp-for="Song.Album.Name" class="control-label">Album</label>
                 <input asp-for="Song.Album.Name" class="form-control" />
                 <span asp-validation-for="Song.Album.Name" class="text-danger"></span>
             </div>

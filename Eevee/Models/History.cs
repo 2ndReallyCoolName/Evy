@@ -15,5 +15,7 @@ namespace Eevee.Models
 
         [Required]
         public float Progress { get; set; }
+
+        public int Liked { get; set; }
     }
 }

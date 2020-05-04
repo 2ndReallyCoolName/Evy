@@ -19,7 +19,8 @@ namespace NaturalLanguage.NN
 
         readonly int output_size = 10;
 
-        readonly string graph_path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())), $"Eevee\\Eevee\\bin\\graph2");
+        //readonly string graph_path = Path.Combine((Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory())), $"bin\\graph2");
+        readonly string graph_path = $"C:\\Users\\ninanpyo\\source\\repos\\Eevee\\Tests\\bin\\graph2";
 
         //Tensors
         Tensor X = null;
@@ -37,7 +38,7 @@ namespace NaturalLanguage.NN
             BuildGraph();
 
             PrepareData();
-            
+
         }
 
 
@@ -83,11 +84,14 @@ namespace NaturalLanguage.NN
 
         public override float[] Predict(string word)
         {
-            if (wordsvecs.ContainsKey(word)){
+            if (wordsvecs.ContainsKey(word))
+            {
                 return wordsvecs[word];
-            }else 
-            
-            if (word2id.ContainsKey(word)) { 
+            }
+            else
+
+            if (word2id.ContainsKey(word))
+            {
 
 
                 using (var sess = tf.Session(graph))
@@ -114,16 +118,29 @@ namespace NaturalLanguage.NN
 
         }
 
-        public override float[] PredictText(string text)
+        public float[] GetVector(string word)
         {
-            if(text == null)
+            if (wordsvecs.ContainsKey(word))
+            {
+                return wordsvecs[word];
+            }
+            else
+            {
+                return new float[output_size];
+            }
+        }
+
+        public float[] PredictText(string text)
+        {
+            if (text == null)
             {
                 return new float[output_size];
             }
 
             string[] words = Text.RemoveStopWords.RemoveWords(text.Trim().ToLower());
 
-            if(words == null)
+
+            if (words == null)
             {
                 return new float[output_size];
             }
@@ -134,11 +151,6 @@ namespace NaturalLanguage.NN
             {
                 vectors[i] = Predict(words[i]);
             }
-
-            // Parallel.ForEach(words, word =>
-            //{
-            //    vector = NaturalLanguage.vector.VectorSpace.Add(vector, model.Predict(word));
-            //});
 
             return vector.VectorSpace.Normalize(vector.VectorSpace.Add(vectors));
         }

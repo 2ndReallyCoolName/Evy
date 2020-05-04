@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Eevee.Data;
 using Eevee.Models;
-using Vspace = NaturalLanguage.vector.VectorSpace;
+using VSpace = NaturalLanguage.vector.VectorSpace;
+using System.Globalization;
 
 namespace Eevee.Pages.Songs
 {
@@ -46,27 +47,60 @@ namespace Eevee.Pages.Songs
             return Page();
         }
 
+        public string error { get; set; }
+
+        public string msg;
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+
+            Song s = _context.Song.Where(x => x.SongID == Song.SongID).FirstOrDefault();
+
+
 
             User user = _context.User.FirstOrDefault(u => u.Username == User.Identity.Name);
 
             Artist artist = _context.Artist.FirstOrDefault(a => a.ArtistID == user.UserID);
 
-            Genre genre = Song.Genre;
+            Album a = _context.Album.Where(x => x.Name == Song.Album.Name && x.Artist.ArtistID == user.UserID).FirstOrDefault();
+            Genre g = _context.Genre.Where(x => x.Name == Song.Genre.Name).FirstOrDefault();
 
-            Song.WordVec = Vspace.ConvertToString(
-                Vspace.Add(Vspace.Add(_textprocessor.PredictText(Song.Lyrics), Vspace.Scale(artist_contrib, Vspace.ToArray(artist.WordVec))),
-                    Vspace.Scale(genre_contrib, Vspace.ToArray(genre.WordVec))));
+            //if (a == null)
+            //{
+            //    Album Album = new Album
+            //    {
+            //        Name = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Song.Album.Name),
+            //        Artist = artist
+            //    };
+            //    Song.Album = Album;
+            //    _context.Album.Add(Album);
+            //}
+            //else
+            //{
+            //    Song.Album = a;
+            //}
 
 
-            _context.Attach(Song).State = EntityState.Modified;
+            //if (g == null)
+            //{
+            //    g = new Genre
+            //    {
+            //        Name = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(Song.Genre.Name.ToLower()),
+            //        WordVec = Vspace.ConvertToString(_textprocessor.PredictText(Song.Genre.Name))
+            //    };
+            //    _context.Genre.Add(g);
+            //}
+
+            //Song.Genre = g;
+
+            //Song.Filepath = ;
+
+            Song.WordVec = VSpace.ConvertToString(
+                VSpace.Normalize(VSpace.Add(_textprocessor.PredictText(Song.Lyrics), _textprocessor.PredictText(Song.Name))));
+
+
+            _context.Song.Update(s);
 
             try
             {
@@ -86,6 +120,7 @@ namespace Eevee.Pages.Songs
 
             return RedirectToPage("./Index");
         }
+
 
         private bool SongExists(int id)
         {

@@ -2,6 +2,8 @@
 
 namespace NaturalLanguage.Text
 {
+
+    //Credit: https://github.com/annytab/a-stemmer/blob/master/Annytab.Stemmer/EnglishStemmer.cs
     public class Stemmer
     {
 

@@ -17,10 +17,6 @@
 </form>
 
 <h4>
-    @Model.lv
-</h4>
-
-<h4>
     @Model.msg
 </h4>
 
@@ -65,7 +61,7 @@
         <tr>
             <td>
                 <form method="post">
-                    <input type="button" runat="server" onclick="@(Html.Raw(String.Format("play('{0}' , '{1}')", Html.Encode(item.Filepath), Html.Encode(item.SongID))))  " value="Play" />
+                    <input type="button" runat="server" onclick="@(Html.Raw(String.Format("play('{0}' , '{1}' )", Html.Encode(item.Filepath), Html.Encode(item.SongID))))  " value="Play" />
                 </form>
 
             </td>
@@ -75,11 +71,11 @@
             <td>
 
                 <form method="post">
-                    <input type="button" runat="server" onclick="@(Html.Raw(String.Format("like('{0}')", Html.Encode(item.SongID))))  " value="+" />
+                    <input type="button" runat="server" onclick="@(Html.Raw(String.Format("like('{0}', '{1}')", Html.Encode(item.SongID), Html.Encode(1))))  " value="Like" />
                 </form>
 
                 <form method="post">
-                    <input type="button" runat="server" onclick="@(Html.Raw(String.Format("dislike('{0}')",  Html.Encode(item.SongID))))  " value="-" />
+                    <input type="button" runat="server" onclick="@(Html.Raw(String.Format("like('{0}', '{1}')", Html.Encode(item.SongID), Html.Encode(-1))))  " value="Dislike" />
                 </form>
 
             </td>
@@ -152,7 +148,7 @@
         });
     }
 
-    function like(id) {
+    function like(id, status) {
         $.ajax({
             type: "POST",
             url: "/Songs/Index?handler=Like",
@@ -160,28 +156,7 @@
                 RequestVerificationToken:
                     $('input:hidden[name="__RequestVerificationToken"]').val()
             },
-            data: {song_id: id}, // passing the parameter
-            //contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function (retValue) {
-                // Do something with the return value from.Net method
-                console.log(retValue);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                console.log(errorThrown);
-            }
-        });
-    }
-
-    function dislike(id) {
-        $.ajax({
-            type: "POST",
-            url: "/Songs/Index?handler=Dislike",
-           headers: {
-                RequestVerificationToken:
-                    $('input:hidden[name="__RequestVerificationToken"]').val()
-            },
-            data: {song_id: id}, // passing the parameter
+            data: {song_id: id, val: status}, // passing the parameter
             //contentType: "application/json; charset=utf-8",
             dataType: "json",
             success: function (retValue) {
