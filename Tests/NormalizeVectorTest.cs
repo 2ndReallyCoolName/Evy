@@ -8,21 +8,20 @@ namespace Tests
         [TestMethod]
         public void TestMethod1()
         {
-            Vector vector1 = new Vector(25, 32);
+           Vector vector1 = new Vector(25, 32);
+            sum = 0;
 
-            vector1.Normalize();
+            for (int i = 0; i < vector1.Length; i++)
+            {
+                sum += vector[i];
+            }
 
-            return vector1;
+            if (sum != 0) {
+                vector1.Normalize();
+            }
             
-            
 
             
-           
-
-
-
-
-
         }
 
 
