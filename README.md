@@ -15,8 +15,16 @@ Yohan Ninan:
 
 Brandon Ganesh
 - Front End Developer.
-- Created and implemented UI design pages using HTML and CSS: Login, user page, Home page, artist profile, song profile, Song page. 
+- Created and implemented UI design pages using HTML and CSS. 
+- Created Login page, user page, Home page, artist profile, song profile, Song page. 
 
 Sean King: 
+- Testing of Audio Analysis functions. 
+-Comparison of different vector values. 
+- Testing of the Natural Language Function for the Vector Space class.
 
 Vamsi Avinash Gunji:
+- Architectural suggestion and project structure 
+- Testing Using abstraction methods 
+- Nunit Testing & Error Reporting
+- Database management Manual Testing
