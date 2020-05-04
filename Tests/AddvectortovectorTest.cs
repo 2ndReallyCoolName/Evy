@@ -12,7 +12,7 @@ namespace Tests
             Vector vector2 = new Vector(22, 29);
             Vector sum = new Vector();
 
-            vector1 += vector2;
+            sum = Vector.Add(vecto1, vector2);
 
             return vector1;
 
