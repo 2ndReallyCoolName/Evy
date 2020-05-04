@@ -8,9 +8,9 @@ namespace Tests
         [TestMethod]
         public void TestMethod1()
         {
-            int[] fs1 = { 26, 29, 27, 30 };
-            int[] fs2 = { 29, 26, 27, 30 };
-            Assert.AreEqual(AudioAnalysis.Compare.Similarity(fs1, fs2), 100);
+            int[] fs3 = { 22, 24, 27, 30 };
+            int[] fs4 = { 22, 24, 30, 27 };
+            Assert.AreEqual(AudioAnalysis.Compare.Similarity(fs3, fs4), 87.5);
 
             int[] fs = { 40, 60, 80, 100, 200 }; double[] amps = { 5, 3, 10, 20, 4 };
             int sr = 2048;
