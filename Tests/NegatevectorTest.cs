@@ -12,7 +12,7 @@ namespace Tests
             
             Vector negate = new Vector();
 
-            negate = Vectore.Negate(vector1);
+            negate = vector1.Negate();
 
             return vector1;
 
