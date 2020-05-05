@@ -11,7 +11,11 @@ using dependency injection to supply all the class with their services.
 **ROLES**
 
 Yohan Ninan: 
-- Main back end developer.
+- Main back End developer
+- Code Structure
+- Integration and Delivery
+- ML and AI Library
+
 
 Brandon Ganesh
 - Front End Developer.
@@ -27,4 +31,11 @@ Vamsi Avinash Gunji:
 - Architectural suggestion and project structure 
 - Testing Using abstraction methods 
 - Nunit Testing & Error Reporting
-- Database management Manual Testing
+- Music Player Update and Errors
+- Database management & Manual Testing
+
+**Github Changes**
+Most of the changes were unable to push from Github because of Sync Errors we had. 
+Yohan had to update most of the project from His End!
+
+
