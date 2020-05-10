@@ -1,7 +1,5 @@
 # Evy
 
-# Evy
-
 **ABOUT**
 - User will be able to create accounts in order to listen music, as well as add to their library, and get recommended music that
 - Ultimately, let our users search for music on a topic they identify with which also sounds similar to what they want to hear.
